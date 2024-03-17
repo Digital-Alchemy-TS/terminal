@@ -49,7 +49,8 @@ export function TerminalHelp({
     terminal.application.setHeader("Help");
     const ALL_SWITCHES: string[] = [];
 
-    const configDefinitions = internal.boilerplate.config.getDefinitions();
+    const configDefinitions =
+      internal.boilerplate.configuration.getDefinitions();
 
     configDefinitions.forEach(configuration =>
       ALL_SWITCHES.push(
