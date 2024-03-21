@@ -1,4 +1,13 @@
-import { START, UP, DOWN, is, SINGLE, INCREMENT, ARRAY_OFFSET, EMPTY } from "@digital-alchemy/core";
+import {
+  ARRAY_OFFSET,
+  DOWN,
+  EMPTY,
+  INCREMENT,
+  is,
+  SINGLE,
+  START,
+  UP,
+} from "@digital-alchemy/core";
 import { cwd, env, platform } from "process";
 
 const UNSORTABLE = new RegExp("[^A-Za-z0-9]", "g");
