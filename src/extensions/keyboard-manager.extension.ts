@@ -1,4 +1,3 @@
-/* eslint-disable @cspell/spellchecker */
 import { each, is, TServiceParams } from "@digital-alchemy/core";
 
 import {
