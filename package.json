@@ -2,7 +2,7 @@
   "name": "@digital-alchemy/terminal",
   "repository": "https://github.com/Digital-Alchemy-TS/terminal",
   "homepage": "https://docs.digital-alchemy.app/Terminal",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
