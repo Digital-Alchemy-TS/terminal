@@ -41,6 +41,8 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     DEFAULT_ACKNOWLEDGE_MESSAGE: {
       default: "Any key to continue",
+      description:
+        "Text for acknowledge component to display if nothing is provided",
       type: "string",
     },
     DEFAULT_PROMPT_WIDTH: {
@@ -55,10 +57,12 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     HEADER_COLOR_PRIMARY: {
       default: "cyan",
+      description: "Color for the big header",
       type: "string",
     },
     HEADER_COLOR_SECONDARY: {
       default: "magenta",
+      description: "Color for the smaller lower header",
       type: "string",
     },
     HEADER_FONT_PRIMARY: {
@@ -79,47 +83,58 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     HELP_DIVIDER: {
       default: "blue.dim",
+      description: "Color for the blue horizontal divider for the help",
       type: "string",
     },
     KEYMAP_TICK: {
       default: `{blue.dim > }`,
-      // default: `{blue.dim ${FontAwesomeIcons.caret_right} }`,
+      description: "Text to display in front of individual items in the keymap",
       type: "string",
     },
     MENU_COLUMN_DIVIDER: {
       default: "{blue.dim |}",
+      description: "Left/right divider for menus",
       type: "string",
     },
     MENU_ENTRY_NORMAL: {
       default: "white",
+      description:
+        "Color for menu entries, same column as cursor, not selected",
       type: "string",
     },
     MENU_ENTRY_OTHER: {
       default: "gray",
+      description: "Color for menu entries, other column from cursor",
       type: "string",
     },
     MENU_ENTRY_SELECTED: {
       default: "bgBlueBright.black",
+      description: "Color for menu entries, selected item",
       type: "string",
     },
     MENU_ENTRY_TYPE: {
       default: "magenta.bold",
+      description: "Color for menu entry category types on the selected side",
       type: "string",
     },
     MENU_ENTRY_TYPE_OTHER: {
       default: "gray.bold",
+      description: "Color for menu entry category types on the other side",
       type: "string",
     },
     MENU_SEARCHBOX_CONTENT: {
       default: "bgCyan",
+      description: "Background color for search boxes when there is content",
       type: "string",
     },
     MENU_SEARCHBOX_EMPTY: {
       default: "bgBlue",
+      description: "Background color for search boxes when there is no content",
       type: "string",
     },
     MENU_SEARCHBOX_NORMAL: {
       default: "bgMagenta",
+      description: "Alternate color for menus search box colors",
       type: "string",
     },
     PAGE_SIZE: {
@@ -129,15 +144,17 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     PROMPT_QUESTION: {
       default: `{blue ?}`,
-      // default: `{blue ${FontAwesomeIcons.question}}`,
+      description: "Text to add in front of prompt messages",
       type: "string",
     },
     STRING_EDITOR_CONTENT: {
       default: "bgWhite",
+      description: "Color for string inputs when there is content",
       type: "string",
     },
     STRING_EDITOR_EMPTY: {
       default: "bgBlue",
+      description: "Color for string inputs when there is no content",
       type: "string",
     },
     TABLE_RENDER_ROWS: {

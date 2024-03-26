@@ -1,3 +1,4 @@
-# terminal
+# Terminal
 
-> See more at the [extended docs](https://docs.digital-alchemy.app/05-Terminal/%F0%9F%A7%AD-Terminal-Overview)
+- [Extended docs](https://docs.digital-alchemy.app/Terminal)
+- [Discord](https://discord.com/invite/mtWHk36upW)
