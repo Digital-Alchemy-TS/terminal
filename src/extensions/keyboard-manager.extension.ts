@@ -11,7 +11,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
   const { chalk } = terminal.internals;
   let activeKeymaps: Map<unknown, TTYComponentKeymap> = new Map();
 
-  lifecycle.onReady(() => {
+  lifecycle.onPreInit(() => {
     const rl = terminal.screen.rl;
     rl.input.on("keypress", (value, key = {}) => {
       keyPressHandler({ key, value });

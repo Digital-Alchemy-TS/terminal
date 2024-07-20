@@ -217,6 +217,8 @@ function sliceRange({
   };
 }
 
+const EXTRA_EARLY = 100;
+
 export function TextRendering({
   terminal,
   config,
@@ -240,7 +242,7 @@ export function TextRendering({
     ).split("_");
     open = OPEN;
     close = CLOSE;
-  });
+  }, EXTRA_EARLY);
 
   function fuzzyHighlight<T>(
     keys: MatchKeys[],
