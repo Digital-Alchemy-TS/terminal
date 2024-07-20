@@ -2,7 +2,7 @@
   "name": "@digital-alchemy/terminal",
   "repository": "https://github.com/Digital-Alchemy-TS/terminal",
   "homepage": "https://docs.digital-alchemy.app",
-  "version": "24.7.1",
+  "version": "24.7.2",
   "scripts": {
     "build": "tsc",
     "test": "./scripts/test.sh",
@@ -25,7 +25,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@digital-alchemy/core": "^24.6.6",
     "chalk": "^5.3.0",
     "chrono-node": "^2.7.5",
     "dayjs": "^1.11.10",
@@ -35,7 +34,11 @@
     "fuzzysort": "^2.0.4",
     "mute-stream": "^1.0.0"
   },
+  "peerDependencies": {
+    "@digital-alchemy/core": "*"
+  },
   "devDependencies": {
+    "@digital-alchemy/core": "^24.7.2",
     "@cspell/eslint-plugin": "^8.7.0",
     "@types/figlet": "^1.5.8",
     "@types/jest": "^29.5.12",
