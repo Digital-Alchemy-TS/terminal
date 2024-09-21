@@ -1,4 +1,5 @@
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
+import chalk from "chalk";
 import { edit } from "external-editor";
 
 import {
@@ -27,7 +28,7 @@ type TypeFilterMenuOptions<VALUE extends unknown = string> = Omit<
 };
 
 export async function Prompts({ terminal, logger, config }: TServiceParams) {
-  const { chalk, template } = terminal.internals;
+  const { template } = terminal.internals;
 
   async function typeFilterMenu<VALUE extends unknown = string>(
     options: TypeFilterMenuOptions<VALUE | string>,
@@ -270,6 +271,7 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
         right: options,
         value: current,
       })) as T;
+      // eslint-disable-next-line sonarjs/different-types-comparison
       if (result === cancel) {
         return current as T;
       }

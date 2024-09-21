@@ -1,5 +1,5 @@
 import { CustomIcons } from "./custom-icons";
-import { DevIcons as DevelopmentIcons } from "./dev-icons";
+import { DevelopmentIcons } from "./dev-icons";
 import { FontAwesomeIcons } from "./fa-icons";
 import { FontAwesomeExtendedIcons } from "./fae-icons";
 import { LinuxIcons } from "./linux-icons";

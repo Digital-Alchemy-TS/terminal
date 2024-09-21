@@ -1,9 +1,9 @@
 import { each, is, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { DirectCB, KeyDescriptor, KeyModifiers, TTYComponentKeymap } from "../helpers";
 
 export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
-  const { chalk } = terminal.internals;
   let activeKeymaps: Map<unknown, TTYComponentKeymap> = new Map();
 
   lifecycle.onPreInit(() => {

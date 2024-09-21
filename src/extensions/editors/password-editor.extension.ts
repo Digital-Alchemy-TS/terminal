@@ -72,6 +72,7 @@ export function PasswordEditor({ terminal, config }: TServiceParams) {
   // FIXME: this
   // eslint-disable-next-line unicorn/consistent-function-scoping
   function renderBox(bgColor: string): void {
+    // eslint-disable-next-line sonarjs/no-unused-expressions, @typescript-eslint/no-unused-expressions
     bgColor;
     // let value = is.empty(value)
     //   ? config.placeholder ?? DEFAULT_PLACEHOLDER

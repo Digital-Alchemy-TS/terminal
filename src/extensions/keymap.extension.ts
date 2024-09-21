@@ -1,4 +1,6 @@
+/* eslint-disable unicorn/consistent-function-scoping */
 import { ARRAY_OFFSET, DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { HighlightCallbacks, TTYComponentKeymap } from "../helpers";
 import { ansiMaxLength } from "../includes";
@@ -23,7 +25,7 @@ interface KeymapHelpOptions {
 }
 
 export function KeyMapExtension({ config, terminal }: TServiceParams) {
-  const { chalk, ansiPadEnd, template } = terminal.internals;
+  const { ansiPadEnd, template } = terminal.internals;
 
   function buildLines<VALUE extends unknown = unknown>(
     map: TTYComponentKeymap,
@@ -41,11 +43,14 @@ export function KeyMapExtension({ config, terminal }: TServiceParams) {
           .filter(([, state]) => state)
           .map(([name]) => chalk.magenta(name));
         const modifiers = is.empty(active) ? "" : active.join("/") + chalk.cyan("+");
+        const list = is.array(config.key)
+          ? config.key.map(i => modifiers + i)
+          : [modifiers + config.key];
+
         const activate = config.catchAll
           ? chalk.yellow("default")
-          : (is.array(config.key) ? config.key.map(i => modifiers + i) : [modifiers + config.key])
-              .map(i => chalk.yellow.dim(i))
-              .join(chalk.gray(", "));
+          : list.map(i => chalk.yellow.dim(i)).join(chalk.gray(", "));
+
         let description: string = (config.description ?? target) as string;
 
         if (config.highlight) {
@@ -80,6 +85,7 @@ export function KeyMapExtension({ config, terminal }: TServiceParams) {
   return {
     keymapHelp({
       current,
+      // eslint-disable-next-line sonarjs/deprecation
       message = "",
       maxLength,
       notes = " ",

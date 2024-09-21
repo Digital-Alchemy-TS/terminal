@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-nested-conditional */
 import { ARRAY_OFFSET, DOWN, EMPTY, INCREMENT, is, SINGLE, START, UP } from "@digital-alchemy/core";
 import { cwd, env, platform } from "process";
 
@@ -18,7 +19,7 @@ export function ansiPadStart(text: string, amount: number): string {
 }
 
 export const ansiSort = (text: string[]): string[] =>
-  text.sort((a, b) =>
+  text.toSorted((a, b) =>
     ansiStrip(a).replaceAll(UNSORTABLE, "") > ansiStrip(b).replaceAll(UNSORTABLE, "") ? UP : DOWN,
   );
 

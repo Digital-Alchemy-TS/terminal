@@ -1,4 +1,5 @@
 import { is, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 import figlet from "figlet";
 
 import { ansiMaxLength } from "../includes";
@@ -24,7 +25,7 @@ export interface TerminalComponent<
 }
 
 export function ApplicationManager({ config, terminal }: TServiceParams) {
-  const { chalk, template } = terminal.internals;
+  const { template } = terminal.internals;
   function headerPad(text: string, color: string): string {
     const leftPadding = " ".repeat(config.terminal.APPLICATION_PADDING_LEFT);
     text = template(`{${color} ${text.trim()}}`)

@@ -7,6 +7,7 @@ import {
   TServiceParams,
   VALUE,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { ObjectBuilderOptions, TableBuilderElement } from "../helpers";
 import { ansiMaxLength, ansiStrip, ELLIPSES } from "../includes";
@@ -29,7 +30,7 @@ function ellipsis(value: string, maxLength: number): string {
 }
 
 export function Form({ terminal, internal }: TServiceParams) {
-  const { chalk, ansiPadEnd, GV, template } = terminal.internals;
+  const { ansiPadEnd, GV, template } = terminal.internals;
   let selectedRow: number;
 
   function formBody<VALUE extends object = Record<string, unknown>, CANCEL extends unknown = never>(
@@ -41,6 +42,7 @@ export function Form({ terminal, internal }: TServiceParams) {
     function getRenderValue(element: TableBuilderElement<VALUE>): unknown {
       const raw = internal.utils.object.get(value, element.path) as unknown[];
       if (element.type === "pick-one") {
+        // eslint-disable-next-line sonarjs/different-types-comparison
         const option = element.options.find(({ entry }) => entry[VALUE] === raw);
         if (option) {
           return option.entry[LABEL];

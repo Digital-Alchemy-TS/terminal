@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-nested-conditional */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import {
   ARRAY_OFFSET,
@@ -11,6 +12,7 @@ import {
   TServiceParams,
   VALUE,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 import { parse, parseDate } from "chrono-node";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -77,7 +79,7 @@ type DATE_TYPES = "day" | "hour" | "minute" | "month" | "second" | "year";
 const SORTED = ["year", "month", "day", "hour", "minute", "second"] as DATE_TYPES[];
 
 export function DateEditor({ terminal, config }: TServiceParams) {
-  const { chalk, template } = terminal.internals;
+  const { template } = terminal.internals;
 
   const VALUES: Record<DATE_TYPES, string> = {
     day: "",

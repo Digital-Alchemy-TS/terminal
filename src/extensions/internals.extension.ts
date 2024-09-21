@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/slow-regex */
+/* eslint-disable sonarjs/regex-complexity */
 /* eslint-disable unicorn/consistent-function-scoping, @typescript-eslint/no-magic-numbers, @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { is, LABEL, SINGLE, START, VALUE } from "@digital-alchemy/core";
@@ -51,6 +53,8 @@ export async function Internals() {
       const number = Number(chunk);
       if (!Number.isNaN(number)) {
         results.push(number);
+        // TODO: fix this
+        // eslint-disable-next-line sonarjs/no-nested-assignment
       } else if ((matches = chunk.match(STRING_REGEX))) {
         results.push(
           matches[2].replaceAll(ESCAPE_REGEX, (_, escape, character) =>
@@ -204,5 +208,5 @@ export async function Internals() {
     return item.length === SINGLE ? (item[LABEL] as unknown as T) : (item[VALUE] as T);
   }
 
-  return { GV, ansiPadEnd, chalk, chalkTemplate, template };
+  return { GV, ansiPadEnd, chalkTemplate, template };
 }

@@ -32,7 +32,7 @@ function breakLines(content: string, width: number): string {
   return content
     .split("\n")
     .flatMap(line => {
-      const chunk = line.match(regex);
+      const chunk = regex.exec(line);
       chunk?.pop();
       return chunk || "";
     })

@@ -1,4 +1,5 @@
 import { ARRAY_OFFSET, HALF, is, SINGLE, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { ObjectBuilderOptions, TableBuilderElement } from "../helpers";
 import { ansiMaxLength } from "../includes";
@@ -32,7 +33,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
   internal,
   config,
 }: TServiceParams) {
-  const { chalk, ansiPadEnd, template } = terminal.internals;
+  const { ansiPadEnd, template } = terminal.internals;
 
   Object.keys(TABLE_PARTS).forEach(
     key =>

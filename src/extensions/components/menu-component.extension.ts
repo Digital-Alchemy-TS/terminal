@@ -16,6 +16,7 @@ import {
   UP,
   VALUE,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 import dayjs from "dayjs";
 
 import {
@@ -133,7 +134,7 @@ let LAST_RESULT: LastMenuResultInfo<unknown>;
 type LR = "left" | "right";
 
 export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TServiceParams) {
-  const { chalk, ansiPadEnd, template, GV } = terminal.internals;
+  const { ansiPadEnd, template, GV } = terminal.internals;
 
   let value: VALUE;
   let callbackOutput = "";

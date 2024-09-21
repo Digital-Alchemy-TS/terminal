@@ -8,6 +8,7 @@ import {
   START,
   TServiceParams,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import {
   BuilderCancelOptions,
@@ -32,7 +33,7 @@ export function ObjectBuilder<
   VALUE extends object = Record<string, unknown>,
   CANCEL extends unknown = never,
 >({ terminal, internal }: TServiceParams) {
-  const { chalk, GV, template } = terminal.internals;
+  const { GV, template } = terminal.internals;
 
   const CANCELLABLE: TTYComponentKeymap = new Map([
     [{ description: "cancel", key: "escape" }, cancel],

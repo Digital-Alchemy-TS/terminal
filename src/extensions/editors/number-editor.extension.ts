@@ -8,6 +8,7 @@ import {
   START,
   TServiceParams,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { TTYComponentKeymap } from "../../helpers";
 import { ansiStrip, ELLIPSES } from "../../includes";
@@ -31,7 +32,7 @@ const DEFAULT_PLACEHOLDER = "enter value";
 const INTERNAL_PADDING = " ";
 
 export function NumberEditor({ terminal, config }: TServiceParams) {
-  const { chalk, ansiPadEnd, template } = terminal.internals;
+  const { ansiPadEnd, template } = terminal.internals;
   const KEYMAP: TTYComponentKeymap = new Map([
     [{ catchAll: true, description: "key press", powerUser: true }, onKeyPress],
     [{ description: "done", key: "enter" }, onEnd],
@@ -149,6 +150,7 @@ export function NumberEditor({ terminal, config }: TServiceParams) {
     if (length > maxLength - ELLIPSES.length) {
       const update = ELLIPSES + stripped.slice((maxLength - ELLIPSES.length) * INVERT_VALUE);
       current = current.replace(stripped, update);
+      // eslint-disable-next-line sonarjs/no-dead-store
       length = update.length;
     }
     current =

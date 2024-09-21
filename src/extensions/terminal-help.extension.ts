@@ -11,6 +11,7 @@ import {
   TServiceParams,
   UP,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 import { exit } from "process";
 
 import { ansiMaxLength } from "../includes";
@@ -33,8 +34,6 @@ function formatDescription(prefix: string, description: string | string[]) {
 }
 
 export function TerminalHelp({ terminal, lifecycle, config, internal }: TServiceParams) {
-  const { chalk } = terminal.internals;
-
   lifecycle.onPostConfig(() => {
     if (!config.terminal.HELP) {
       return;
@@ -82,7 +81,7 @@ export function TerminalHelp({ terminal, lifecycle, config, internal }: TService
           }
           default:
             return;
-            otherSwitch(property, config);
+          // otherSwitch(property, config);
         }
         terminal.screen.down();
       });
@@ -135,4 +134,6 @@ export function TerminalHelp({ terminal, lifecycle, config, internal }: TService
     const prefix = chalk`  {${color} --${property}} {gray [{bold string}}${defaultValue}${enums}{gray ]} `;
     terminal.screen.printLine(formatDescription(prefix, config.description));
   }
+
+  return { otherSwitch };
 }

@@ -13,6 +13,7 @@ import {
   TServiceParams,
   UP,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 import fuzzy from "fuzzysort";
 import { stdout } from "process";
 import { inspect, InspectOptions } from "util";
@@ -216,7 +217,7 @@ function sliceRange({ text, index, maxLength }: SliceRangeOptions): SliceTextRes
 const EXTRA_EARLY = 100;
 
 export function TextRendering({ terminal, config, internal, lifecycle }: TServiceParams) {
-  const { chalk, ansiPadEnd, GV, template } = terminal.internals;
+  const { ansiPadEnd, GV, template } = terminal.internals;
   const NESTING_LEVELS = [
     chalk.cyan(" - "),
     chalk.magenta(" * "),
@@ -246,7 +247,7 @@ export function TextRendering({ terminal, config, internal, lifecycle }: TServic
     const item = is.object(result[index])
       ? result[index]
       : fuzzy.single(defaultValue as string, "");
-    const label = fuzzy.highlight(item, open, close);
+    const label = item.highlight(open, close);
     return label || defaultValue;
   }
 
@@ -403,7 +404,7 @@ export function TextRendering({ terminal, config, internal, lifecycle }: TServic
       }));
       return fuzzy.go(searchText, formatted, { all: true, key: "label" }).map(result => {
         return {
-          entry: [fuzzy.highlight(result, open, close), result.obj.value],
+          entry: [result.highlight(open, close), result.obj.value],
           helpText: result.obj.help,
           type: result.obj.type,
         } as MainMenuEntry<T>;

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/different-types-comparison */
 import {
   ARRAY_OFFSET,
   DOWN,
@@ -14,6 +15,7 @@ import {
   TServiceParams,
   UP,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { MainMenuEntry, PickManyComponentOptions, TTYComponentKeymap } from "../../helpers";
 import { ansiMaxLength, ansiStrip } from "../../includes";
@@ -29,7 +31,7 @@ type MenuSides = "current" | "source";
  * One contains a source, one contains a list of selected values.
  */
 export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServiceParams) {
-  const { chalk, ansiPadEnd, GV, template } = terminal.internals;
+  const { ansiPadEnd, GV, template } = terminal.internals;
   const EMPTY_LIST = template(` {gray.bold.inverse  List is empty } `);
   const KEYMAP_FIND: TTYComponentKeymap = new Map([
     [{ description: "backspace", key: "backspace", powerUser: true }, searchBack],
@@ -450,12 +452,11 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
 
       const colorPrefix = template(` {${altColor} ${prefix}} `);
 
-      const color =
-        selectedType === currentSide
-          ? highlight
-            ? config.terminal.MENU_ENTRY_SELECTED
-            : config.terminal.MENU_ENTRY_NORMAL
-          : config.terminal.MENU_ENTRY_OTHER;
+      const sameSide = highlight
+        ? config.terminal.MENU_ENTRY_SELECTED
+        : config.terminal.MENU_ENTRY_NORMAL;
+
+      const color = selectedType === currentSide ? sameSide : config.terminal.MENU_ENTRY_OTHER;
 
       out.push(colorPrefix + template(`{${color}  ${padded}}`));
     });

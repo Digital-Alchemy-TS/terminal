@@ -1,4 +1,5 @@
 import { deepExtend, is, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { ArrayBuilderOptions, KeyMap, MainMenuCB, MainMenuEntry, MenuEntry } from "../../helpers";
 import { ComponentDoneCallback } from "..";
@@ -6,7 +7,6 @@ import { ComponentDoneCallback } from "..";
 type TypeToggle = { type: string };
 
 export function ArrayBuilder<VALUE extends object>({ terminal, internal }: TServiceParams) {
-  const { chalk } = terminal.internals;
   let complete = false;
   let disabledTypes: string[] = [];
   let done: ComponentDoneCallback<VALUE>;

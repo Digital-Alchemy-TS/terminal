@@ -1,4 +1,5 @@
 import { ARRAY_OFFSET, EMPTY, is, SINGLE, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { KeyModifiers, TTYComponentKeymap } from "../../helpers";
 
@@ -18,7 +19,7 @@ const DEFAULT_PLACEHOLDER = "enter value";
 const NO_CURSOR = -1;
 
 export function StringEditor({ terminal, config }: TServiceParams) {
-  const { chalk, template } = terminal.internals;
+  const { template } = terminal.internals;
 
   const KEYMAP: TTYComponentKeymap = new Map([
     [{ catchAll: true, description: "onKeyPress", powerUser: true }, onKeyPress],
