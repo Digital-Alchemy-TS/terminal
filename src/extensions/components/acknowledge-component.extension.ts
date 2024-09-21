@@ -13,31 +13,24 @@ export function AcknowledgeComponent({ terminal, config }: TServiceParams) {
     [{ description: "done" }, () => component.onEnd()],
   ]) as TTYComponentKeymap;
 
-  const component = terminal.registry.registerComponent<AcknowledgeConfig>(
-    "acknowledge",
-    {
-      configure(config, onDone) {
-        done = onDone;
-        label = config.label;
-        terminal.keyboard.setKeymap(component, KEYMAP);
-      },
-      onEnd() {
-        done();
-        done = undefined;
-      },
-      render() {
-        if (is.undefined(done)) {
-          return;
-        }
-        terminal.screen.printLine(
-          label || chalk.bold(config.terminal.DEFAULT_ACKNOWLEDGE_MESSAGE),
-        );
-      },
+  const component = terminal.registry.registerComponent<AcknowledgeConfig>("acknowledge", {
+    configure(config, onDone) {
+      done = onDone;
+      label = config.label;
+      terminal.keyboard.setKeymap(component, KEYMAP);
     },
-  );
+    onEnd() {
+      done();
+      done = undefined;
+    },
+    render() {
+      if (is.undefined(done)) {
+        return;
+      }
+      terminal.screen.printLine(label || chalk.bold(config.terminal.DEFAULT_ACKNOWLEDGE_MESSAGE));
+    },
+  });
 
   return async (options?: string | PromptAcknowledgeOptions) =>
-    await terminal.prompt.acknowledge(
-      is.string(options) ? { label: options } : options,
-    );
+    await terminal.prompt.acknowledge(is.string(options) ? { label: options } : options);
 }

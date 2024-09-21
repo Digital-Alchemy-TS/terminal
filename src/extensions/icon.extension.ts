@@ -10,14 +10,8 @@ export enum TTYReplacementIcons {
 export function IconExtension({ terminal, config }: TServiceParams) {
   const { chalk } = terminal.internals;
   const IconMap = new Map<TTYReplacementIcons, string[]>([
-    [
-      TTYReplacementIcons.toggle_on,
-      [FontAwesomeIcons.toggle_on, "*"].map(i => chalk.green(i)),
-    ],
-    [
-      TTYReplacementIcons.toggle_off,
-      [FontAwesomeIcons.toggle_off, "*"].map(i => chalk.red(i)),
-    ],
+    [TTYReplacementIcons.toggle_on, [FontAwesomeIcons.toggle_on, "*"].map(i => chalk.green(i))],
+    [TTYReplacementIcons.toggle_off, [FontAwesomeIcons.toggle_off, "*"].map(i => chalk.red(i))],
   ]);
 
   return {

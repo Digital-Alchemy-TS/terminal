@@ -1,10 +1,4 @@
-import {
-  ARRAY_OFFSET,
-  DOWN,
-  is,
-  TServiceParams,
-  UP,
-} from "@digital-alchemy/core";
+import { ARRAY_OFFSET, DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
 
 import { HighlightCallbacks, TTYComponentKeymap } from "../helpers";
 import { ansiMaxLength } from "../includes";
@@ -31,7 +25,6 @@ interface KeymapHelpOptions {
 export function KeyMapExtension({ config, terminal }: TServiceParams) {
   const { chalk, ansiPadEnd, template } = terminal.internals;
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   function buildLines<VALUE extends unknown = unknown>(
     map: TTYComponentKeymap,
     current: VALUE,
@@ -47,15 +40,10 @@ export function KeyMapExtension({ config, terminal }: TServiceParams) {
         const active = Object.entries({ ...config.modifiers })
           .filter(([, state]) => state)
           .map(([name]) => chalk.magenta(name));
-        const modifiers = is.empty(active)
-          ? ""
-          : active.join("/") + chalk.cyan("+");
+        const modifiers = is.empty(active) ? "" : active.join("/") + chalk.cyan("+");
         const activate = config.catchAll
           ? chalk.yellow("default")
-          : (is.array(config.key)
-              ? config.key.map(i => modifiers + i)
-              : [modifiers + config.key]
-            )
+          : (is.array(config.key) ? config.key.map(i => modifiers + i) : [modifiers + config.key])
               .map(i => chalk.yellow.dim(i))
               .join(chalk.gray(", "));
         let description: string = (config.description ?? target) as string;
@@ -109,9 +97,7 @@ export function KeyMapExtension({ config, terminal }: TServiceParams) {
       const help = [...a, ...b]
         .map(({ label, description }) => {
           const paddedLabel = ansiPadEnd(label, biggestLabel);
-          return template(
-            `${config.terminal.KEYMAP_TICK}${paddedLabel}  ${description}`,
-          );
+          return template(`${config.terminal.KEYMAP_TICK}${paddedLabel}  ${description}`);
         })
         .join(`\n`);
       if (onlyHelp) {

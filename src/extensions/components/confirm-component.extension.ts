@@ -1,10 +1,6 @@
 import { TServiceParams } from "@digital-alchemy/core";
 
-import {
-  DirectCB,
-  PromptConfirmOptions,
-  TTYKeypressOptions,
-} from "../../helpers";
+import { DirectCB, PromptConfirmOptions, TTYKeypressOptions } from "../../helpers";
 
 export function ConfirmComponent({ terminal }: TServiceParams) {
   let complete = false;
@@ -68,6 +64,5 @@ export function ConfirmComponent({ terminal }: TServiceParams) {
     },
   });
 
-  return async (options: PromptConfirmOptions) =>
-    await terminal.prompt.confirm(options);
+  return async (options: PromptConfirmOptions) => await terminal.prompt.confirm(options);
 }

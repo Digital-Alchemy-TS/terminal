@@ -1,12 +1,28 @@
-import { FILTER_OPERATIONS, TServiceParams } from "@digital-alchemy/core";
+import { TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
+
+/**
+ * Enumerates the types of operations available for data filtering.
+ */
+export enum FILTER_OPERATIONS {
+  // "elemMatch" functionality in mongo
+  // eslint-disable-next-line unicorn/prevent-abbreviations
+  elem = "elem",
+  regex = "regex",
+  in = "in",
+  nin = "nin",
+  lt = "lt",
+  lte = "lte",
+  gt = "gt",
+  gte = "gte",
+  exists = "exists",
+  empty = "empty",
+  ne = "ne",
+  eq = "eq",
+}
 
 export function ComparisonTools({ terminal }: TServiceParams) {
-  const { chalk } = terminal.internals;
-
-  const dateMessage = [
-    `Compare 2 things relative to each other.`,
-    `Numbers are `,
-  ].join(`\n`);
+  const dateMessage = [`Compare 2 things relative to each other.`, `Numbers are `].join(`\n`);
   const FILTER_OPERATIONS_HELP = new Map<FILTER_OPERATIONS, string>([
     [
       FILTER_OPERATIONS.eq,
@@ -18,10 +34,7 @@ export function ComparisonTools({ terminal }: TServiceParams) {
       ].join(`\n`),
     ],
     [FILTER_OPERATIONS.gt, dateMessage],
-    [
-      FILTER_OPERATIONS.ne,
-      [chalk`Attempt to compare 2 values inequality`].join(`\n`),
-    ],
+    [FILTER_OPERATIONS.ne, [chalk`Attempt to compare 2 values inequality`].join(`\n`)],
     [
       FILTER_OPERATIONS.regex,
       [chalk`Does the property conform to a regular expression?`].join(`\n`),

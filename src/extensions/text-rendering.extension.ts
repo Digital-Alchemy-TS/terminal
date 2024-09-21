@@ -115,12 +115,8 @@ type SliceTextResult = {
  * ~ Ellipsis incrementally reveals
  * ~ When all characters are visible, cursor starts moving towards text boundary
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity
-function sliceRange({
-  text,
-  index,
-  maxLength,
-}: SliceRangeOptions): SliceTextResult {
+
+function sliceRange({ text, index, maxLength }: SliceRangeOptions): SliceTextResult {
   text += TEXT_CAP;
   const total = text.length;
   const difference = total - maxLength;
@@ -219,12 +215,7 @@ function sliceRange({
 
 const EXTRA_EARLY = 100;
 
-export function TextRendering({
-  terminal,
-  config,
-  internal,
-  lifecycle,
-}: TServiceParams) {
+export function TextRendering({ terminal, config, internal, lifecycle }: TServiceParams) {
   const { chalk, ansiPadEnd, GV, template } = terminal.internals;
   const NESTING_LEVELS = [
     chalk.cyan(" - "),
@@ -237,9 +228,7 @@ export function TextRendering({
   let open: string;
 
   lifecycle.onPostConfig(() => {
-    const [OPEN, CLOSE] = template(
-      `{${config.terminal.FUZZY_HIGHLIGHT} _}`,
-    ).split("_");
+    const [OPEN, CLOSE] = template(`{${config.terminal.FUZZY_HIGHLIGHT} _}`).split("_");
     open = OPEN;
     close = CLOSE;
   }, EXTRA_EARLY);
@@ -273,11 +262,7 @@ export function TextRendering({
      */
     assemble(
       [leftEntries, rightEntries]: [string[], string[]],
-      {
-        left,
-        right,
-        search,
-      }: { left?: string; right?: string; search?: string } = {},
+      { left, right, search }: { left?: string; right?: string; search?: string } = {},
     ): string[] {
       const out = [...leftEntries];
       left = left ? " " + left : left;
@@ -292,10 +277,7 @@ export function TextRendering({
       if (leftEntries.length > rightEntries.length) {
         out.forEach(
           (line, index) =>
-            (out[index] =
-              index < rightEntries.length
-                ? line
-                : ansiPadEnd(line, maxA) + divider),
+            (out[index] = index < rightEntries.length ? line : ansiPadEnd(line, maxA) + divider),
         );
       }
       if (!is.empty(left)) {
@@ -359,10 +341,7 @@ export function TextRendering({
       const formatted = data.map(i => {
         const value = GV(i.entry);
         return {
-          deep:
-            is.object(value) && is.string(deep)
-              ? internal.utils.object.get(value, deep)
-              : {},
+          deep: is.object(value) && is.string(deep) ? internal.utils.object.get(value, deep) : {},
           helpText: i.helpText,
           label: i.entry[LABEL],
           type: i.type,
@@ -375,9 +354,7 @@ export function TextRendering({
       flags.label ??= true;
       flags.type ??= true;
 
-      let keys = Object.keys(flags).filter(
-        i => flags[i as keyof typeof flags],
-      ) as MatchKeys[];
+      let keys = Object.keys(flags).filter(i => flags[i as keyof typeof flags]) as MatchKeys[];
       if (!is.empty(deep)) {
         keys.push("deep");
       }
@@ -424,15 +401,13 @@ export function TextRendering({
         type: i.type,
         value: GV(i.entry),
       }));
-      return fuzzy
-        .go(searchText, formatted, { all: true, key: "label" })
-        .map(result => {
-          return {
-            entry: [fuzzy.highlight(result, open, close), result.obj.value],
-            helpText: result.obj.help,
-            type: result.obj.type,
-          } as MainMenuEntry<T>;
-        });
+      return fuzzy.go(searchText, formatted, { all: true, key: "label" }).map(result => {
+        return {
+          entry: [fuzzy.highlight(result, open, close), result.obj.value],
+          helpText: result.obj.help,
+          type: result.obj.type,
+        } as MainMenuEntry<T>;
+      });
     },
 
     helpFormat(helpText: MenuHelpText): string {
@@ -440,22 +415,16 @@ export function TextRendering({
         helpText = helpText.join(`\n`);
       }
       if (is.object(helpText)) {
-        helpText =
-          chalk.bold.cyan`Reference Data\n` + terminal.text.type(helpText);
+        helpText = chalk.bold.cyan`Reference Data\n` + terminal.text.type(helpText);
       }
       return helpText;
     },
 
-    mergeHelp(
-      message: string,
-      { helpText = "" }: { helpText?: MenuHelpText } = {},
-    ) {
+    mergeHelp(message: string, { helpText = "" }: { helpText?: MenuHelpText } = {}) {
       if (is.empty(helpText)) {
         return message;
       }
-      return (
-        message + chalk.blue.dim(`\n \n  ? `) + rendering.helpFormat(helpText)
-      );
+      return message + chalk.blue.dim(`\n \n  ? `) + rendering.helpFormat(helpText);
     },
 
     /**
@@ -472,15 +441,9 @@ export function TextRendering({
      * Component rendering
      */
     searchBox(searchText: string, size = MAX_SEARCH_SIZE): string[] {
-      const text = is.empty(searchText)
-        ? chalk.bgBlue`Type to filter`
-        : searchText;
+      const text = is.empty(searchText) ? chalk.bgBlue`Type to filter` : searchText;
       const color = is.empty(searchText) ? "bgBlue" : "bgWhite";
-      return [
-        " ",
-        template(`{${color}.black  ${ansiPadEnd(text, size)}}`),
-        ` `,
-      ];
+      return [" ", template(`{${color}.black  ${ansiPadEnd(text, size)}}`), ` `];
     },
 
     searchBoxEditable({
@@ -493,9 +456,7 @@ export function TextRendering({
     }: EditableSearchBoxOptions): string[] {
       // * If no value, return back empty box w/ placeholder
       if (!value) {
-        return [
-          chalk[bgColor as "bold"].black(ansiPadEnd(` ${placeholder} `, width)),
-        ];
+        return [chalk[bgColor as "bold"].black(ansiPadEnd(` ${placeholder} `, width))];
       }
       const out: string[] = [];
 
@@ -559,16 +520,10 @@ export function TextRendering({
 
       if (extras) {
         out.unshift({
-          entry: [
-            template(`{yellow +${index - BUFFER_SIZE}} more`),
-            INTERNAL_ENTRY as T,
-          ],
+          entry: [template(`{yellow +${index - BUFFER_SIZE}} more`), INTERNAL_ENTRY as T],
         });
         out.push({
-          entry: [
-            template(`{yellow +${entries.length - end}} more`),
-            INTERNAL_ENTRY as T,
-          ],
+          entry: [template(`{yellow +${entries.length - end}} more`), INTERNAL_ENTRY as T],
         });
       }
       return out;
@@ -598,11 +553,7 @@ export function TextRendering({
           return chalk.gray(`empty string`);
         }
         let trimmed: string = item;
-        if (
-          is.number(maxLength) &&
-          maxLength > EMPTY &&
-          item.length > maxLength
-        ) {
+        if (is.number(maxLength) && maxLength > EMPTY && item.length > maxLength) {
           trimmed = (trimmed.slice(START, maxLength - ELLIPSES.length) +
             chalk.blueBright(ELLIPSES)) as string;
         }
@@ -629,14 +580,11 @@ export function TextRendering({
       }
       if (is.object(item)) {
         const maxKey =
-          Math.max(
-            ...Object.keys(item).map(i => internal.utils.TitleCase(i).length),
-          ) + INCREMENT;
+          Math.max(...Object.keys(item).map(i => internal.utils.titleCase(i).length)) + INCREMENT;
 
         const indent = INDENT.repeat(nested);
         const nesting = NESTING_LEVELS[nested];
-        const title = (key: string) =>
-          internal.utils.TitleCase(key).padEnd(maxKey);
+        const title = (key: string) => internal.utils.titleCase(key).padEnd(maxKey);
         const type = (key: string) =>
           rendering.type(item[key as keyof typeof item], nested + INCREMENT);
 
@@ -644,12 +592,7 @@ export function TextRendering({
           (nested ? `\n` : "") +
           Object.keys(item)
             .sort((a, b) => (a > b ? UP : DOWN))
-            .map(
-              key =>
-                indent +
-                template(`{bold ${nesting}${title(key)}} `) +
-                type(key),
-            )
+            .map(key => indent + template(`{bold ${nesting}${title(key)}} `) + type(key))
             .join(`\n`)
         );
       }

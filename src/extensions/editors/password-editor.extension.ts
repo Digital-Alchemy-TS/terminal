@@ -1,10 +1,4 @@
-import {
-  INVERT_VALUE,
-  is,
-  SINGLE,
-  START,
-  TServiceParams,
-} from "@digital-alchemy/core";
+import { INVERT_VALUE, is, SINGLE, START, TServiceParams } from "@digital-alchemy/core";
 
 import { KeyModifiers, TTYComponentKeymap } from "../../helpers";
 
@@ -112,31 +106,26 @@ export function PasswordEditor({ terminal, config }: TServiceParams) {
     //   );
   }
 
-  const editor = terminal.registry.registerEditor<PasswordEditorRenderOptions>(
-    "password",
-    {
-      configure(options, onDone: (type: unknown) => void) {
-        opt = options;
-        complete = false;
-        value = options.current ?? "";
-        done = onDone;
-        terminal.keyboard.setKeymap(editor, KEYMAP);
-      },
-
-      render(): void {
-        if (complete) {
-          terminal.screen.render(
-            template(
-              `${config.terminal.PROMPT_QUESTION} {bold ${opt.label}} {gray ${value}}`,
-            ),
-          );
-          return;
-        }
-        if (is.empty(value)) {
-          return renderBox("bgBlue");
-        }
-        return renderBox("bgWhite");
-      },
+  const editor = terminal.registry.registerEditor<PasswordEditorRenderOptions>("password", {
+    configure(options, onDone: (type: unknown) => void) {
+      opt = options;
+      complete = false;
+      value = options.current ?? "";
+      done = onDone;
+      terminal.keyboard.setKeymap(editor, KEYMAP);
     },
-  );
+
+    render(): void {
+      if (complete) {
+        terminal.screen.render(
+          template(`${config.terminal.PROMPT_QUESTION} {bold ${opt.label}} {gray ${value}}`),
+        );
+        return;
+      }
+      if (is.empty(value)) {
+        return renderBox("bgBlue");
+      }
+      return renderBox("bgWhite");
+    },
+  });
 }

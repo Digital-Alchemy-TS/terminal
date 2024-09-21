@@ -1,4 +1,5 @@
 import { CreateLibrary, StringConfig } from "@digital-alchemy/core";
+import { LIB_CACHE } from "@digital-alchemy/utils";
 import { Fonts } from "figlet";
 
 import {
@@ -41,8 +42,7 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     DEFAULT_ACKNOWLEDGE_MESSAGE: {
       default: "Any key to continue",
-      description:
-        "Text for acknowledge component to display if nothing is provided",
+      description: "Text for acknowledge component to display if nothing is provided",
       type: "string",
     },
     DEFAULT_PROMPT_WIDTH: {
@@ -98,8 +98,7 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     MENU_ENTRY_NORMAL: {
       default: "white",
-      description:
-        "Color for menu entries, same column as cursor, not selected",
+      description: "Color for menu entries, same column as cursor, not selected",
       type: "string",
     },
     MENU_ENTRY_OTHER: {
@@ -159,8 +158,7 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     TABLE_RENDER_ROWS: {
       default: 20,
-      description:
-        "Default quantity of rows to render in prompts like arrayBuilder",
+      description: "Default quantity of rows to render in prompts like arrayBuilder",
       type: "number",
     },
     TEXT_DEBUG_ARRAY_LENGTH: {
@@ -175,11 +173,11 @@ export const LIB_TERMINAL = CreateLibrary({
     },
     USE_FONTAWESOME_ICONS: {
       default: true,
-      description:
-        "Utilize font awesome icons in prompts. Requires font to be installed.",
+      description: "Utilize font awesome icons in prompts. Requires font to be installed.",
       type: "boolean",
     },
   },
+  depends: [LIB_CACHE],
   name: "terminal",
   priorityInit: ["internals", "registry"],
   services: {

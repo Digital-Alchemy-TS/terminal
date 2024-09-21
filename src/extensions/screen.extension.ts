@@ -10,6 +10,7 @@ import {
   TServiceParams,
   VALUE,
 } from "@digital-alchemy/core";
+import { ResultPromise } from "execa";
 import MuteStream from "mute-stream";
 import { stdin, stdout } from "process";
 import { createInterface, Interface } from "readline";
@@ -39,7 +40,6 @@ function breakLines(content: string, width: number): string {
 }
 
 export async function Screen({ terminal, config }: TServiceParams) {
-  const { execa } = await import("execa");
   const { template } = terminal.internals;
   let height = EMPTY;
   let lastContent: [string, string[]];
@@ -128,9 +128,7 @@ export async function Screen({ terminal, config }: TServiceParams) {
       return await terminal.keyboard.wrap(async () => {
         out.render();
         const result = await callback();
-        out.printLine(
-          ansiEscapes.eraseLines(calc_height(sticky[START]) + PADDING),
-        );
+        out.printLine(ansiEscapes.eraseLines(calc_height(sticky[START]) + PADDING));
         sticky = undefined;
         height = PADDING;
         // Next-render up to the calling service
@@ -139,7 +137,7 @@ export async function Screen({ terminal, config }: TServiceParams) {
       });
     },
 
-    async pipe(child: ReturnType<typeof execa>): Promise<void> {
+    async pipe(child: ResultPromise): Promise<void> {
       out.rl.output.unmute();
       child.stdout.pipe(stdout);
       out.rl.output.mute();
@@ -188,10 +186,7 @@ export async function Screen({ terminal, config }: TServiceParams) {
           ),
         );
         stickyContent =
-          header +
-          `\n` +
-          template(`{${config.terminal.HELP_DIVIDER} ${line}}`) +
-          `\n`;
+          header + `\n` + template(`{${config.terminal.HELP_DIVIDER} ${line}}`) + `\n`;
       }
 
       if (is.empty(content)) {

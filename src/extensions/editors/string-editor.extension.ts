@@ -1,11 +1,4 @@
-import {
-  ARRAY_OFFSET,
-  EMPTY,
-  is,
-  SINGLE,
-  START,
-  TServiceParams,
-} from "@digital-alchemy/core";
+import { ARRAY_OFFSET, EMPTY, is, SINGLE, START, TServiceParams } from "@digital-alchemy/core";
 
 import { KeyModifiers, TTYComponentKeymap } from "../../helpers";
 
@@ -28,10 +21,7 @@ export function StringEditor({ terminal, config }: TServiceParams) {
   const { chalk, template } = terminal.internals;
 
   const KEYMAP: TTYComponentKeymap = new Map([
-    [
-      { catchAll: true, description: "onKeyPress", powerUser: true },
-      onKeyPress,
-    ],
+    [{ catchAll: true, description: "onKeyPress", powerUser: true }, onKeyPress],
     [{ description: "done", key: "enter" }, onEnd],
     [{ description: "reset", key: "r", modifiers: { ctrl: true } }, reset],
     [{ description: "clear", key: "f4" }, clear],
@@ -99,9 +89,7 @@ export function StringEditor({ terminal, config }: TServiceParams) {
         if (cursor === EMPTY) {
           return;
         }
-        value = [...value]
-          .filter((_, index) => index !== cursor - ARRAY_OFFSET)
-          .join("");
+        value = [...value].filter((_, index) => index !== cursor - ARRAY_OFFSET).join("");
         cursor--;
         return;
       }
@@ -113,11 +101,9 @@ export function StringEditor({ terminal, config }: TServiceParams) {
     if (key.length > SINGLE) {
       return;
     }
-    value = [
-      value.slice(START, cursor),
-      shift ? key.toUpperCase() : key,
-      value.slice(cursor),
-    ].join("");
+    value = [value.slice(START, cursor), shift ? key.toUpperCase() : key, value.slice(cursor)].join(
+      "",
+    );
     cursor++;
   }
 
@@ -160,10 +146,7 @@ export function StringEditor({ terminal, config }: TServiceParams) {
   }
 
   const editor = terminal.registry.registerEditor("string", {
-    configure(
-      options: StringEditorRenderOptions,
-      onDone: (type: unknown) => void,
-    ) {
+    configure(options: StringEditorRenderOptions, onDone: (type: unknown) => void) {
       options.width ??= config.terminal.DEFAULT_PROMPT_WIDTH;
       opt = options;
       complete = false;
@@ -184,8 +167,7 @@ export function StringEditor({ terminal, config }: TServiceParams) {
       }
       if (complete) {
         terminal.screen.render(
-          template(`${config.terminal.PROMPT_QUESTION} {bold ${opt.label}}\n`) +
-            chalk.gray(value),
+          template(`${config.terminal.PROMPT_QUESTION} {bold ${opt.label}}\n`) + chalk.gray(value),
         );
         return;
       }
@@ -196,6 +178,5 @@ export function StringEditor({ terminal, config }: TServiceParams) {
     },
   });
 
-  return async (options: StringEditorRenderOptions) =>
-    await terminal.prompt.string(options);
+  return async (options: StringEditorRenderOptions) => await terminal.prompt.string(options);
 }

@@ -32,10 +32,7 @@ export function Form({ terminal, internal }: TServiceParams) {
   const { chalk, ansiPadEnd, GV, template } = terminal.internals;
   let selectedRow: number;
 
-  function formBody<
-    VALUE extends object = Record<string, unknown>,
-    CANCEL extends unknown = never,
-  >(
+  function formBody<VALUE extends object = Record<string, unknown>, CANCEL extends unknown = never>(
     value: VALUE,
     activeOptions: ObjectBuilderOptions<VALUE, CANCEL>,
     maxLabel: number,
@@ -44,9 +41,7 @@ export function Form({ terminal, internal }: TServiceParams) {
     function getRenderValue(element: TableBuilderElement<VALUE>): unknown {
       const raw = internal.utils.object.get(value, element.path) as unknown[];
       if (element.type === "pick-one") {
-        const option = element.options.find(
-          ({ entry }) => entry[VALUE] === raw,
-        );
+        const option = element.options.find(({ entry }) => entry[VALUE] === raw);
         if (option) {
           return option.entry[LABEL];
         }
@@ -83,17 +78,8 @@ export function Form({ terminal, internal }: TServiceParams) {
       );
     }
 
-    function nameCell(
-      i: TableBuilderElement<VALUE>,
-      color: "blue" | "green",
-      max?: number,
-    ) {
-      return template(
-        `${" ".repeat(PADDING)}{bold.${color} ${i.name.padEnd(
-          max - PADDING,
-          " ",
-        )}}`,
-      );
+    function nameCell(i: TableBuilderElement<VALUE>, color: "blue" | "green", max?: number) {
+      return template(`${" ".repeat(PADDING)}{bold.${color} ${i.name.padEnd(max - PADDING, " ")}}`);
     }
 
     function renderValue(
@@ -117,9 +103,7 @@ export function Form({ terminal, internal }: TServiceParams) {
       const labels = (
         nameCell(
           i,
-          is.equal(internal.utils.object.get(original, i.path), raw)
-            ? "blue"
-            : "green",
+          is.equal(internal.utils.object.get(original, i.path), raw) ? "blue" : "green",
           maxLabel,
         ) + `\n`.repeat(lines - INCREMENT)
       ).split(`\n`);
@@ -183,19 +167,14 @@ export function Form({ terminal, internal }: TServiceParams) {
   }
 
   return {
-    renderForm<
-      VALUE extends object = Record<string, unknown>,
-      CANCEL extends unknown = never,
-    >(
+    renderForm<VALUE extends object = Record<string, unknown>, CANCEL extends unknown = never>(
       options: ObjectBuilderOptions<VALUE, CANCEL>,
       row: VALUE,
       original: VALUE,
       targetRow: number = START,
     ): string {
       selectedRow = targetRow;
-      const maxLength = ansiMaxLength(
-        ...options.elements.map(({ name }) => name),
-      );
+      const maxLength = ansiMaxLength(...options.elements.map(({ name }) => name));
       const header = formBody(row, options, maxLength, original);
       return [...header].join(`\n`);
     },

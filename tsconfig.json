@@ -9,8 +9,8 @@
     "lib": [
       "ESNext"
     ],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noImplicitAny": true,
     "declaration": true,
     "noImplicitReturns": true,

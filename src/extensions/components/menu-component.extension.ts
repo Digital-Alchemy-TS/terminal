@@ -132,12 +132,7 @@ function isSearchEnabled(options: MenuSearchOptions) {
 let LAST_RESULT: LastMenuResultInfo<unknown>;
 type LR = "left" | "right";
 
-export function Menu<VALUE = unknown | string>({
-  config,
-  terminal,
-  cache,
-  internal,
-}: TServiceParams) {
+export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TServiceParams) {
   const { chalk, ansiPadEnd, template, GV } = terminal.internals;
 
   let value: VALUE;
@@ -181,10 +176,7 @@ export function Menu<VALUE = unknown | string>({
   /**
    * Run callbacks from the keyMap
    */
-  async function activateKeyMap(
-    mixed: string,
-    modifiers: KeyModifiers,
-  ): Promise<void> {
+  async function activateKeyMap(mixed: string, modifiers: KeyModifiers): Promise<void> {
     const { keyMap, keyMapCallback: callback } = opt;
     const entry = findKeyEntry(keyMap, mixed);
     if (!entry) {
@@ -206,9 +198,7 @@ export function Menu<VALUE = unknown | string>({
       component.onEnd();
       return;
     }
-    const selectedItem = side(selectedType).find(
-      ({ entry }) => GV(entry) === value,
-    );
+    const selectedItem = side(selectedType).find(({ entry }) => GV(entry) === value);
     const result = await (selectedItem
       ? callback(GV(entry) as string, [
           // Force a value entry to be present
@@ -280,9 +270,7 @@ export function Menu<VALUE = unknown | string>({
       value = GV(available[START].entry);
       return;
     }
-    value = GV(
-      available[key === "up" ? index - INCREMENT : index + INCREMENT].entry,
-    );
+    value = GV(available[key === "up" ? index - INCREMENT : index + INCREMENT].entry);
   }
 
   /**
@@ -378,9 +366,7 @@ export function Menu<VALUE = unknown | string>({
       }
       case "delete": {
         // no need for cursor adjustments
-        searchText = [...searchText]
-          .filter((_, index) => index !== searchCursor)
-          .join("");
+        searchText = [...searchText].filter((_, index) => index !== searchCursor).join("");
         update = true;
         return;
       }
@@ -517,10 +503,7 @@ export function Menu<VALUE = unknown | string>({
             },
             onSearchKeyPress,
           ],
-          [
-            { description: "select entry", key: "enter" },
-            () => component.onEnd(),
-          ],
+          [{ description: "select entry", key: "enter" }, () => component.onEnd()],
           [{ description: "toggle find", key: "tab" }, toggleFind],
         ]),
       );
@@ -669,10 +652,8 @@ export function Menu<VALUE = unknown | string>({
     const currentIndex = current.indexOf(value);
     const reversedIndex = other.length - ARRAY_OFFSET - currentIndex;
     value = other
-      .reverse()
-      .find(
-        (item, index) => index >= reversedIndex && item !== BLANK_SPACE,
-      ) as VALUE;
+      .toReversed()
+      .find((item, index) => index >= reversedIndex && item !== BLANK_SPACE) as VALUE;
   }
 
   function filteredRangedSides() {
@@ -753,14 +734,9 @@ export function Menu<VALUE = unknown | string>({
     const out =
       !is.empty(opt.left) && !is.empty(opt.right)
         ? terminal.text.assemble(
-            Object.values(sides).map(i => i.map(x => x.entry[LABEL])) as [
-              string[],
-              string[],
-            ],
+            Object.values(sides).map(i => i.map(x => x.entry[LABEL])) as [string[], string[]],
           )
-        : renderSide("right", false, updateValue).map(
-            ({ entry }) => entry[LABEL],
-          );
+        : renderSide("right", false, updateValue).map(({ entry }) => entry[LABEL]);
     let bgColor = config.terminal.MENU_SEARCHBOX_NORMAL;
     if (mode === FIND_INPUT) {
       bgColor = is.empty(searchText)
@@ -782,10 +758,7 @@ export function Menu<VALUE = unknown | string>({
       [...search, " ", ...out].join(`\n`),
       entries.find(({ entry }) => GV(entry) === value),
     );
-    terminal.screen.render(
-      message,
-      terminal.keymap.keymapHelp({ message, notes: notes() }),
-    );
+    terminal.screen.render(message, terminal.keymap.keymapHelp({ message, notes: notes() }));
   }
 
   /**
@@ -795,10 +768,7 @@ export function Menu<VALUE = unknown | string>({
     const construction = {} as MenuConstruction;
 
     // * Very top text, error / response text
-    if (
-      !is.empty(callbackOutput) &&
-      callbackTimestamp.isAfter(dayjs().subtract(PAIR, "second"))
-    ) {
+    if (!is.empty(callbackOutput) && callbackTimestamp.isAfter(dayjs().subtract(PAIR, "second"))) {
       construction.alert = CONSTRUCTION_PROP(callbackOutput + `\n\n`);
     }
 
@@ -806,20 +776,14 @@ export function Menu<VALUE = unknown | string>({
     if (!is.empty(opt.headerMessage)) {
       let headerMessage = opt.headerMessage;
       if (is.array(headerMessage)) {
-        const stringArray = (headerMessage as string[]).every(i =>
-          is.string(i),
-        );
+        const stringArray = (headerMessage as string[]).every(i => is.string(i));
         if (stringArray) {
           headerMessage = headerMessage.join(`\n`);
         } else {
           const message = headerMessage as [key: string, value: string][];
-          const max =
-            ansiMaxLength(message.map(([label]) => label)) + INCREMENT;
+          const max = ansiMaxLength(message.map(([label]) => label)) + INCREMENT;
           headerMessage = message
-            .map(
-              ([label, value]) =>
-                chalk`{bold ${ansiPadEnd(label + ":", max)}} ${value}`,
-            )
+            .map(([label, value]) => chalk`{bold ${ansiPadEnd(label + ":", max)}} ${value}`)
             .join(`\n`);
         }
       }
@@ -830,25 +794,19 @@ export function Menu<VALUE = unknown | string>({
     // * Component body
     const out = is.empty(opt.left)
       ? renderSide("right").map(({ entry }) => entry[LABEL])
-      : terminal.text.assemble(
-          sides.map(i => i.map(x => x.entry[LABEL])) as [string[], string[]],
-        );
+      : terminal.text.assemble(sides.map(i => i.map(x => x.entry[LABEL])) as [string[], string[]]);
 
     construction.columnHeaders = CONSTRUCTION_PROP(
       opt.showHeaders ? `\n  ${out.shift()}\n ` : `\n \n`,
     );
     construction.body = CONSTRUCTION_PROP(out.map(i => `  ${i}`).join(`\n`));
 
-    const selectedItem = side(selectedType).find(
-      ({ entry }) => GV(entry) === value,
-    );
+    const selectedItem = side(selectedType).find(({ entry }) => GV(entry) === value);
 
     // * Item help text
     if (!is.empty(selectedItem?.helpText)) {
       construction.helpText = CONSTRUCTION_PROP(
-        template(
-          `\n \n {blue.dim ?} ${terminal.text.helpFormat(selectedItem.helpText)}`,
-        ),
+        template(`\n \n {blue.dim ?} ${terminal.text.helpFormat(selectedItem.helpText)}`),
       );
     }
 
@@ -862,9 +820,7 @@ export function Menu<VALUE = unknown | string>({
     );
 
     const line = `=`.repeat(dividerWidth);
-    construction.divider = CONSTRUCTION_PROP(
-      template(`{${config.terminal.HELP_DIVIDER} ${line}}`),
-    );
+    construction.divider = CONSTRUCTION_PROP(template(`{${config.terminal.HELP_DIVIDER} ${line}}`));
 
     const message = assembleMessage(construction);
     terminal.screen.render(message);
@@ -895,11 +851,11 @@ export function Menu<VALUE = unknown | string>({
       const [label] = item;
       return [
         {
-          description: label + "  ",
+          description: (is.string(label) ? label : label.name) + "  ",
           highlight: is.undefined(highlight)
             ? undefined
             : {
-                highlightMatch: value => GV(item) === value,
+                highlightMatch: (value: unknown) => GV(item) === value,
                 ...highlight,
               },
           key: [key, ...aliases],
@@ -910,16 +866,14 @@ export function Menu<VALUE = unknown | string>({
     return terminal.keymap.keymapHelp({
       current: value,
       onlyHelp: true,
-      prefix: new Map(
-        prefix.filter(item => !is.undefined(item)) as PrefixArray[],
-      ),
+      prefix: new Map(prefix.filter(item => !is.undefined(item)) as PrefixArray[]),
     });
   }
 
   /**
    * Render a menu from a side
    */
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   function renderSide(
     side: "left" | "right" = selectedType,
     header = opt.showHeaders,
@@ -933,7 +887,7 @@ export function Menu<VALUE = unknown | string>({
       let prefix = ansiPadEnd(item.type, maxType);
       // ? Optionally, make it fancy
       if (opt.titleTypes) {
-        prefix = internal.utils.TitleCase(prefix);
+        prefix = internal.utils.titleCase(prefix);
       }
       // ? If it is the same as the previous one (above), then render blank space
       if (last === prefix) {
@@ -966,9 +920,7 @@ export function Menu<VALUE = unknown | string>({
           ...item,
           entry: [
             // ? {grouping type in magenta} {item}
-            template(
-              ` {${config.terminal.MENU_ENTRY_TYPE} ${prefix}} {${color}  ${padded}}`,
-            ),
+            template(` {${config.terminal.MENU_ENTRY_TYPE} ${prefix}} {${color}  ${padded}}`),
             GV(item.entry),
           ],
         });
@@ -988,10 +940,7 @@ export function Menu<VALUE = unknown | string>({
     const max = ansiMaxLength(...out.map(({ entry }) => entry[LABEL]));
     if (header) {
       out.unshift({
-        entry: [
-          chalk.bold.blue.dim(renderSideHeader(side, max)),
-          Symbol.for("header_object"),
-        ],
+        entry: [chalk.bold.blue.dim(renderSideHeader(side, max)), Symbol.for("header_object")],
       });
     }
 
@@ -1006,10 +955,7 @@ export function Menu<VALUE = unknown | string>({
     return `${padding}${rightHeader}`.padEnd(max, " ");
   }
 
-  function renderSideSetup(
-    selected: "left" | "right" = selectedType,
-    updateValue = false,
-  ) {
+  function renderSideSetup(selected: "left" | "right" = selectedType, updateValue = false) {
     const out: MainMenuEntry[] = [];
     let menu = side(selected);
     if (mode !== "select") {
@@ -1021,28 +967,20 @@ export function Menu<VALUE = unknown | string>({
     const maxType = ansiMaxLength(...menu.map(({ type }) => type));
     const maxLabel =
       ansiMaxLength(
-        ...menu.map(
-          ({ entry, icon }) =>
-            entry[LABEL] + (is.empty(icon) ? "" : `${icon} `),
-        ),
+        ...menu.map(({ entry, icon }) => entry[LABEL] + (is.empty(icon) ? "" : `${icon} `)),
       ) + ARRAY_OFFSET;
     if (is.empty(menu) && !opt.keyOnly) {
       out.push({
         entry: [
           opt.emptyMessage ??
-            template(
-              ` {yellowBright.inverse.bold  No ${opt.item} to select from }`,
-            ),
+            template(` {yellowBright.inverse.bold  No ${opt.item} to select from }`),
         ],
       });
     }
     return { maxLabel, maxType, menu, out };
   }
 
-  function searchItems(
-    findValue: VALUE,
-    restore: MenuRestore,
-  ): MainMenuEntry<string | VALUE> {
+  function searchItems(findValue: VALUE, restore: MenuRestore): MainMenuEntry<string | VALUE> {
     return [...opt.left, ...opt.right].find(entry => {
       const local = GV(entry);
       const value = findValue;
@@ -1092,18 +1030,12 @@ export function Menu<VALUE = unknown | string>({
     // show if keyOnly, or falsy condensed
     const hidden = opt.keyOnly || opt.condensed;
     const PARTIAL_LIST: tMenuItem[] = [
-      [
-        { catchAll: true, description: "everything else", powerUser: true },
-        activateKeyMap,
-      ],
+      [{ catchAll: true, description: "everything else", powerUser: true }, activateKeyMap],
       ...(opt.keyOnly
         ? []
         : ([
             [{ description: "next", key: "down" }, next],
-            [
-              { description: "select entry", key: "enter" },
-              () => component.onEnd(),
-            ],
+            [{ description: "select entry", key: "enter" }, () => component.onEnd()],
             [{ description: "previous", key: "up" }, previous],
           ] as tMenuItem[])),
 
@@ -1128,23 +1060,17 @@ export function Menu<VALUE = unknown | string>({
       [{ description: "left", key: "left" }, onLeft],
       [{ description: "right", key: "right" }, onRight],
     ];
-    const SEARCH: tMenuItem[] = [
-      [{ description: "toggle find", key: "tab" }, toggleFind],
-    ];
+    const SEARCH: tMenuItem[] = [[{ description: "toggle find", key: "tab" }, toggleFind]];
 
     const search_keymap = !searchEnabled || opt.keyOnly ? [] : SEARCH;
-    const left_right =
-      is.empty(opt.left) || is.empty(opt.right) ? [] : LEFT_RIGHT;
+    const left_right = is.empty(opt.left) || is.empty(opt.right) ? [] : LEFT_RIGHT;
 
     const keymap = new Map([...PARTIAL_LIST, ...left_right, ...search_keymap]);
     terminal.keyboard.setKeymap(component, keymap);
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  async function setValue(
-    incoming: VALUE,
-    restore: MenuRestore,
-  ): Promise<void> {
+  async function setValue(incoming: VALUE, restore: MenuRestore): Promise<void> {
     value = undefined;
 
     // If the dev provided a value, then it takes priority
@@ -1162,9 +1088,7 @@ export function Menu<VALUE = unknown | string>({
 
     // If a restore id is available, attempt to get data from that
     if (!is.empty(restore?.id)) {
-      const data = await cache.get<MenuRestoreCacheData<VALUE>>(
-        CACHE_KEY_RESTORE(restore.id),
-      );
+      const data = await cache.get<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(restore.id));
 
       if (data) {
         // Position based value restoration
@@ -1211,14 +1135,11 @@ export function Menu<VALUE = unknown | string>({
    *  - Type sorting: priority set by highest level item inside type, then alphabetical
    *  - Items sorted within types, priority first, then ansi stripped label
    */
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   function side(side: "left" | "right"): MainMenuEntry<VALUE>[] {
     let temp = opt[side].map(item => [
       item,
-      ansiStrip(item.entry[LABEL]).replaceAll(
-        new RegExp("[^A-Za-z0-9]", "g"),
-        "",
-      ),
+      ansiStrip(item.entry[LABEL]).replaceAll(new RegExp("[^A-Za-z0-9]", "g"), ""),
     ]) as [MainMenuEntry, string][];
     if (sort) {
       // Run through all the menu items, and find the highest priority for each type
@@ -1289,16 +1210,12 @@ export function Menu<VALUE = unknown | string>({
       rightHeader = config.rightHeader || "Menu";
       leftHeader =
         config.leftHeader ||
-        (!is.empty(config.left) && !is.empty(config.right)
-          ? "Secondary"
-          : "Menu");
+        (!is.empty(config.left) && !is.empty(config.right) ? "Secondary" : "Menu");
 
       // Dev can force sorting either way
       // If types are provided on items, then sorting is enabled by default to properly group types
       // Otherwise, order in = order out
-      sort =
-        config.sort ??
-        [...config.left, ...config.right].some(({ type }) => !is.empty(type));
+      sort = config.sort ?? [...config.left, ...config.right].some(({ type }) => !is.empty(type));
 
       // * Finial init
       await setValue(config.value, config.restore);
@@ -1314,9 +1231,7 @@ export function Menu<VALUE = unknown | string>({
         return;
       }
       const list = side(selectedType);
-      const index = list.findIndex(
-        entry => GV(entry) === selectedValue ?? value,
-      );
+      const index = list.findIndex(entry => GV(entry) === (selectedValue ?? value));
       final = true;
       mode = "select";
       callbackOutput = "";
@@ -1335,13 +1250,10 @@ export function Menu<VALUE = unknown | string>({
       done = undefined;
       if (opt.restore) {
         setImmediate(async () => {
-          await cache.set<MenuRestoreCacheData<VALUE>>(
-            CACHE_KEY_RESTORE(opt.restore?.id),
-            {
-              position: [selectedType, index],
-              value: GV(list[index]) ?? value,
-            },
-          );
+          await cache.set<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(opt.restore?.id), {
+            position: [selectedType, index],
+            value: GV(list[index]) ?? value,
+          });
         });
       }
     },
@@ -1370,7 +1282,6 @@ export function Menu<VALUE = unknown | string>({
     },
   });
 
-  return async <VALUE = unknown>(
-    options: MenuComponentOptions<string | VALUE>,
-  ) => await terminal.prompt.menu<VALUE>(options);
+  return async <VALUE = unknown>(options: MenuComponentOptions<string | VALUE>) =>
+    await terminal.prompt.menu<VALUE>(options);
 }

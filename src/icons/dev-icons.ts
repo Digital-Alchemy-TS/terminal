@@ -1,4 +1,4 @@
-export enum DevIcons {
+export enum DevelopmentIcons {
   "android" = "\uE70E",
   "angular" = "\uE753",
   "appcelerator" = "\uE7AB",

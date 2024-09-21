@@ -14,12 +14,7 @@ import {
 import { parse, parseDate } from "chrono-node";
 import dayjs, { Dayjs } from "dayjs";
 
-import {
-  DirectCB,
-  KeyModifiers,
-  TTYComponentKeymap,
-  TTYKeypressOptions,
-} from "../../helpers";
+import { DirectCB, KeyModifiers, TTYComponentKeymap, TTYKeypressOptions } from "../../helpers";
 
 export enum TTYDateTypes {
   datetime = "datetime",
@@ -79,14 +74,7 @@ const DEFAULT_RANGE_PLACEHOLDER = "tomorrow at noon to next friday";
 const PADDING = 2;
 
 type DATE_TYPES = "day" | "hour" | "minute" | "month" | "second" | "year";
-const SORTED = [
-  "year",
-  "month",
-  "day",
-  "hour",
-  "minute",
-  "second",
-] as DATE_TYPES[];
+const SORTED = ["year", "month", "day", "hour", "minute", "second"] as DATE_TYPES[];
 
 export function DateEditor({ terminal, config }: TServiceParams) {
   const { chalk, template } = terminal.internals;
@@ -251,8 +239,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
         break;
       }
       case "right": {
-        cursor =
-          cursor >= chronoText.length ? chronoText.length : cursor + SINGLE;
+        cursor = cursor >= chronoText.length ? chronoText.length : cursor + SINGLE;
         break;
       }
       case "home": {
@@ -264,9 +251,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
         break;
       }
       case "delete": {
-        chronoText = [...chronoText]
-          .filter((_, index) => index !== cursor)
-          .join("");
+        chronoText = [...chronoText].filter((_, index) => index !== cursor).join("");
         // no need for cursor adjustments
         break;
       }
@@ -277,9 +262,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
         if (cursor === EMPTY) {
           break;
         }
-        chronoText = [...chronoText]
-          .filter((_, index) => index !== cursor - ARRAY_OFFSET)
-          .join("");
+        chronoText = [...chronoText].filter((_, index) => index !== cursor - ARRAY_OFFSET).join("");
         cursor--;
         break;
       }
@@ -291,11 +274,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       return;
     }
     const value = shift ? key.toUpperCase() : key;
-    chronoText = [
-      chronoText.slice(START, cursor),
-      value,
-      chronoText.slice(cursor),
-    ].join("");
+    chronoText = [chronoText.slice(START, cursor), value, chronoText.slice(cursor)].join("");
     cursor++;
   }
 
@@ -467,8 +446,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
   }
 
   function renderChronoBox(): void {
-    const placeholder =
-      type === "range" ? DEFAULT_RANGE_PLACEHOLDER : DEFAULT_PLACEHOLDER;
+    const placeholder = type === "range" ? DEFAULT_RANGE_PLACEHOLDER : DEFAULT_PLACEHOLDER;
     const value = is.empty(chronoText) ? placeholder : chronoText;
     const out: string[] = [];
     if (opt.label) {
@@ -495,17 +473,10 @@ export function DateEditor({ terminal, config }: TServiceParams) {
         (end ? chalk.bold("Start: ") : "") + start.date().toLocaleString(),
       );
       if (end) {
-        out.push(
-          template(`  {bold End:} ${end ? end.date().toLocaleString() : ""}`),
-        );
+        out.push(template(`  {bold End:} ${end ? end.date().toLocaleString() : ""}`));
       }
     } else {
-      out.push(
-        "",
-        template(
-          ` {cyan >} {bold.red Resolved value}\n{bgYellow.black CANNOT PARSE}`,
-        ),
-      );
+      out.push("", template(` {cyan >} {bold.red Resolved value}\n{bgYellow.black CANNOT PARSE}`));
     }
     const message = terminal.text.pad(out.join(`\n`));
     terminal.screen.render(
@@ -529,9 +500,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       ].join(`\n`);
     } else {
       const label = opt.label || type === "time" ? "Time" : "Date";
-      message += template(
-        `${config.terminal.PROMPT_QUESTION} {bold ${label}: }`,
-      );
+      message += template(`${config.terminal.PROMPT_QUESTION} {bold ${label}: }`);
       switch (type) {
         case "time": {
           message += value.toDate().toLocaleTimeString();
@@ -565,23 +534,17 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const { year, month, day } = VALUES;
       message +=
         edit === "year" && !end
-          ? chalk[is.empty(year) ? "bgBlue" : "bgWhite"].black(
-              year.padEnd(4, " "),
-            )
+          ? chalk[is.empty(year) ? "bgBlue" : "bgWhite"].black(year.padEnd(4, " "))
           : year.padEnd(4, " ");
       message += `-`;
       message +=
         edit === "month" && !end
-          ? chalk[is.empty(month) ? "bgBlue" : "bgWhite"].black(
-              month.padEnd(2, " "),
-            )
+          ? chalk[is.empty(month) ? "bgBlue" : "bgWhite"].black(month.padEnd(2, " "))
           : month.padEnd(2, " ");
       message += `-`;
       message +=
         edit === "day" && !end
-          ? chalk[is.empty(day) ? "bgBlue" : "bgWhite"].black(
-              day.padEnd(2, " "),
-            )
+          ? chalk[is.empty(day) ? "bgBlue" : "bgWhite"].black(day.padEnd(2, " "))
           : day.padEnd(2, " ");
       message += ` `;
     }
@@ -589,23 +552,17 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const { minute, hour, second } = VALUES;
       message +=
         edit === "hour" && !end
-          ? chalk[is.empty(hour) ? "bgBlue" : "bgWhite"].black(
-              hour.padEnd(2, " "),
-            )
+          ? chalk[is.empty(hour) ? "bgBlue" : "bgWhite"].black(hour.padEnd(2, " "))
           : hour.padEnd(2, " ");
       message += `:`;
       message +=
         edit === "minute" && !end
-          ? chalk[is.empty(minute) ? "bgBlue" : "bgWhite"].black(
-              minute.padEnd(2, " "),
-            )
+          ? chalk[is.empty(minute) ? "bgBlue" : "bgWhite"].black(minute.padEnd(2, " "))
           : minute.padEnd(2, " ");
       message += `:`;
       message +=
         edit === "second" && !end
-          ? chalk[is.empty(second) ? "bgBlue" : "bgWhite"].black(
-              second.padEnd(2, " "),
-            )
+          ? chalk[is.empty(second) ? "bgBlue" : "bgWhite"].black(second.padEnd(2, " "))
           : second.padEnd(2, " ");
     }
     message += chalk`\n  {bold To:} `;
@@ -614,23 +571,17 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const { year, month, day } = END_VALUES;
       message +=
         edit === "year" && end
-          ? chalk[is.empty(year) ? "bgBlue" : "bgWhite"].black(
-              year.padEnd(4, " "),
-            )
+          ? chalk[is.empty(year) ? "bgBlue" : "bgWhite"].black(year.padEnd(4, " "))
           : year.padEnd(4, " ");
       message += `-`;
       message +=
         edit === "month" && end
-          ? chalk[is.empty(month) ? "bgBlue" : "bgWhite"].black(
-              month.padEnd(2, " "),
-            )
+          ? chalk[is.empty(month) ? "bgBlue" : "bgWhite"].black(month.padEnd(2, " "))
           : month.padEnd(2, " ");
       message += `-`;
       message +=
         edit === "day" && end
-          ? chalk[is.empty(day) ? "bgBlue" : "bgWhite"].black(
-              day.padEnd(2, " "),
-            )
+          ? chalk[is.empty(day) ? "bgBlue" : "bgWhite"].black(day.padEnd(2, " "))
           : day.padEnd(2, " ");
       message += ` `;
     }
@@ -638,23 +589,17 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const { minute, hour, second } = END_VALUES;
       message +=
         edit === "hour" && end
-          ? chalk[is.empty(hour) ? "bgBlue" : "bgWhite"].black(
-              hour.padEnd(2, " "),
-            )
+          ? chalk[is.empty(hour) ? "bgBlue" : "bgWhite"].black(hour.padEnd(2, " "))
           : hour.padEnd(2, " ");
       message += `:`;
       message +=
         edit === "minute" && end
-          ? chalk[is.empty(minute) ? "bgBlue" : "bgWhite"].black(
-              minute.padEnd(2, " "),
-            )
+          ? chalk[is.empty(minute) ? "bgBlue" : "bgWhite"].black(minute.padEnd(2, " "))
           : minute.padEnd(2, " ");
       message += `:`;
       message +=
         edit === "second" && end
-          ? chalk[is.empty(second) ? "bgBlue" : "bgWhite"].black(
-              second.padEnd(2, " "),
-            )
+          ? chalk[is.empty(second) ? "bgBlue" : "bgWhite"].black(second.padEnd(2, " "))
           : second.padEnd(2, " ");
     }
     terminal.screen.render(
@@ -678,23 +623,17 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const { year, month, day } = VALUES;
       message +=
         edit === "year"
-          ? chalk[is.empty(year) ? "bgBlue" : "bgWhite"].black(
-              year.padEnd(4, " "),
-            )
+          ? chalk[is.empty(year) ? "bgBlue" : "bgWhite"].black(year.padEnd(4, " "))
           : year.padEnd(4, " ");
       message += `-`;
       message +=
         edit === "month"
-          ? chalk[is.empty(month) ? "bgBlue" : "bgWhite"].black(
-              month.padEnd(2, " "),
-            )
+          ? chalk[is.empty(month) ? "bgBlue" : "bgWhite"].black(month.padEnd(2, " "))
           : month.padEnd(2, " ");
       message += `-`;
       message +=
         edit === "day"
-          ? chalk[is.empty(day) ? "bgBlue" : "bgWhite"].black(
-              day.padEnd(2, " "),
-            )
+          ? chalk[is.empty(day) ? "bgBlue" : "bgWhite"].black(day.padEnd(2, " "))
           : day.padEnd(2, " ");
       message += ` `;
     }
@@ -702,23 +641,17 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const { minute, hour, second } = VALUES;
       message +=
         edit === "hour"
-          ? chalk[is.empty(hour) ? "bgBlue" : "bgWhite"].black(
-              hour.padEnd(2, " "),
-            )
+          ? chalk[is.empty(hour) ? "bgBlue" : "bgWhite"].black(hour.padEnd(2, " "))
           : hour.padEnd(2, " ");
       message += `:`;
       message +=
         edit === "minute"
-          ? chalk[is.empty(minute) ? "bgBlue" : "bgWhite"].black(
-              minute.padEnd(2, " "),
-            )
+          ? chalk[is.empty(minute) ? "bgBlue" : "bgWhite"].black(minute.padEnd(2, " "))
           : minute.padEnd(2, " ");
       message += `:`;
       message +=
         edit === "second"
-          ? chalk[is.empty(second) ? "bgBlue" : "bgWhite"].black(
-              second.padEnd(2, " "),
-            )
+          ? chalk[is.empty(second) ? "bgBlue" : "bgWhite"].black(second.padEnd(2, " "))
           : second.padEnd(2, " ");
     }
     terminal.screen.render(
@@ -759,19 +692,14 @@ export function DateEditor({ terminal, config }: TServiceParams) {
 
   function setKeymap() {
     const FUZZY_KEYMAP: TTYComponentKeymap = new Map([
-      [
-        { catchAll: true, description: "key press", powerUser: true },
-        onKeyPress,
-      ],
+      [{ catchAll: true, description: "key press", powerUser: true }, onKeyPress],
       [{ description: "done", key: "enter" }, onEnd],
       [{ description: "clear", key: "escape" }, reset],
       ...(opt.fuzzy === "user"
-        ? ([
-            [
-              { description: chalk.bold("granular input"), key: "tab" },
-              toggleChrono,
-            ],
-          ] as [TTYKeypressOptions, DirectCB][])
+        ? ([[{ description: chalk.bold("granular input"), key: "tab" }, toggleChrono]] as [
+            TTYKeypressOptions,
+            DirectCB,
+          ][])
         : []),
     ]);
     const NORMAL_KEYMAP: TTYComponentKeymap = new Map([
@@ -783,22 +711,18 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       [{ description: "cursor left", key: "left" }, onLeft],
       [{ description: "cursor right", key: "right" }, onRight],
       // Other common keys, feels excessive to report them to the user
-      [
-        { description: "right", key: [":", "-", "space"], powerUser: true },
-        onRight,
-      ],
+      [{ description: "right", key: [":", "-", "space"], powerUser: true }, onRight],
       ...(["datetime", "range"].includes(type) && opt.fuzzy === "user"
-        ? ([
-            [
-              { description: chalk.bold("fuzzy input"), key: "tab" },
-              toggleChrono,
-            ],
-          ] as [TTYKeypressOptions, DirectCB][])
+        ? ([[{ description: chalk.bold("fuzzy input"), key: "tab" }, toggleChrono]] as [
+            TTYKeypressOptions,
+            DirectCB,
+          ][])
         : []),
       ...(type === "range"
-        ? ([
-            [{ description: "toggle from / to", key: "tab" }, toggleRangeSide],
-          ] as [TTYKeypressOptions, DirectCB][])
+        ? ([[{ description: "toggle from / to", key: "tab" }, toggleRangeSide]] as [
+            TTYKeypressOptions,
+            DirectCB,
+          ][])
         : []),
       // "power user features"
       // aka: stuff I'm keeping off the help menu because it's getting cluttered
@@ -821,10 +745,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
   }
 
   const editor = terminal.registry.registerEditor("date", {
-    configure(
-      config: DateEditorEditorOptions,
-      onDone: (type: unknown) => void,
-    ): void {
+    configure(config: DateEditorEditorOptions, onDone: (type: unknown) => void): void {
       error = "";
       chronoText = config.currentFuzzy ?? "";
       cursor = chronoText.length;
@@ -836,8 +757,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       // ? Make that @InjectConfig controlled?
       fuzzy =
         config.defaultStyle === "fuzzy" ||
-        ((["datetime", "range"] as tDateType[]).includes(type) &&
-          config.fuzzy === "always");
+        ((["datetime", "range"] as tDateType[]).includes(type) && config.fuzzy === "always");
       complete = false;
       localDirty = false;
       value = dayjs(opt.current);
@@ -845,9 +765,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       setKeymap();
       const start = is.array(value) ? (value[START] as Dayjs) : value;
       edit = type === "time" ? "hour" : "year";
-      const end = is.array(value)
-        ? ((value[VALUE] ?? value[START]) as Dayjs)
-        : value;
+      const end = is.array(value) ? ((value[VALUE] ?? value[START]) as Dayjs) : value;
       // const { year, month, day, minute, hour, second } = VALUES;
 
       const [year, month, day, hour, minute, second] = start
