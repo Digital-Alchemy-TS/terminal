@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/different-types-comparison */
 import {
   ARRAY_OFFSET,
   DOWN,
@@ -14,12 +15,9 @@ import {
   TServiceParams,
   UP,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
-import {
-  MainMenuEntry,
-  PickManyComponentOptions,
-  TTYComponentKeymap,
-} from "../../helpers";
+import { MainMenuEntry, PickManyComponentOptions, TTYComponentKeymap } from "../../helpers";
 import { ansiMaxLength, ansiStrip } from "../../includes";
 import { INTERNAL_ENTRY } from "..";
 
@@ -32,18 +30,11 @@ type MenuSides = "current" | "source";
  * Renders 2 lists side by side.
  * One contains a source, one contains a list of selected values.
  */
-export function PickMany<VALUE = unknown>({
-  terminal,
-  internal,
-  config,
-}: TServiceParams) {
-  const { chalk, ansiPadEnd, GV, template } = terminal.internals;
+export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServiceParams) {
+  const { ansiPadEnd, GV, template } = terminal.internals;
   const EMPTY_LIST = template(` {gray.bold.inverse  List is empty } `);
   const KEYMAP_FIND: TTYComponentKeymap = new Map([
-    [
-      { description: "backspace", key: "backspace", powerUser: true },
-      searchBack,
-    ],
+    [{ description: "backspace", key: "backspace", powerUser: true }, searchBack],
     [{ description: "toggle selected", key: ["`", "f4"] }, toggle],
     [{ description: "current", key: "left" }, onLeft],
     [{ description: "toggle find", key: "tab" }, toggleFind],
@@ -127,9 +118,7 @@ export function PickMany<VALUE = unknown>({
     const sourceList = raw.filter(i => GV(i) !== INTERNAL_ENTRY);
 
     // Move item to current list
-    const item = sourceList.find(
-      item => GV(item.entry) === value,
-    ) as MainMenuEntry<string>;
+    const item = sourceList.find(item => GV(item.entry) === value) as MainMenuEntry<string>;
     current.push(item);
     // Remove from source
     source = sourceList.filter(check => GV(check.entry) !== value);
@@ -170,30 +159,21 @@ export function PickMany<VALUE = unknown>({
   }
 
   function bottom(): void {
-    const list = rawSortCache[selectedType].filter(
-      i => GV(i) !== INTERNAL_ENTRY,
-    );
+    const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     value = GV(list[list.length - ARRAY_OFFSET]);
     component.render();
   }
 
   function pageDown(): void {
-    const list = rawSortCache[selectedType].filter(
-      i => GV(i) !== INTERNAL_ENTRY,
-    );
+    const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     const index = list.findIndex(i => GV(i) === value);
-    const target = Math.min(
-      list.length - ARRAY_OFFSET,
-      index + config.terminal.PAGE_SIZE,
-    );
+    const target = Math.min(list.length - ARRAY_OFFSET, index + config.terminal.PAGE_SIZE);
     value = GV(list[target]);
     component.render();
   }
 
   function pageUp(): void {
-    const list = rawSortCache[selectedType].filter(
-      i => GV(i) !== INTERNAL_ENTRY,
-    );
+    const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     const index = list.findIndex(i => GV(i) === value);
     const target = Math.max(START, index - config.terminal.PAGE_SIZE);
     value = GV(list[target]);
@@ -241,9 +221,7 @@ export function PickMany<VALUE = unknown>({
 
   function next(): void {
     setImmediate(() => component.render());
-    const list = rawSortCache[selectedType].filter(
-      i => GV(i) !== INTERNAL_ENTRY,
-    );
+    const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     const index = list.findIndex(i => GV(i) === value);
     if (index === NOT_FOUND) {
       value = GV(list[FIRST]);
@@ -259,11 +237,7 @@ export function PickMany<VALUE = unknown>({
 
   function numericSelect(mixed: string): void {
     numericSelection = mixed;
-    const item =
-      side()[
-        Number(is.empty(numericSelection) ? "1" : numericSelection) -
-          ARRAY_OFFSET
-      ];
+    const item = side()[Number(is.empty(numericSelection) ? "1" : numericSelection) - ARRAY_OFFSET];
     value = is.object(item) ? GV(item) : value;
     component.render();
   }
@@ -281,10 +255,7 @@ export function PickMany<VALUE = unknown>({
     if (current > left.length) {
       current = left.length - ARRAY_OFFSET;
     }
-    value =
-      left.length < current
-        ? GV(left[left.length - ARRAY_OFFSET])
-        : GV(left[current]);
+    value = left.length < current ? GV(left[left.length - ARRAY_OFFSET]) : GV(left[current]);
     component.render();
   }
 
@@ -310,9 +281,7 @@ export function PickMany<VALUE = unknown>({
 
   function previous(): void {
     setImmediate(() => component.render());
-    const list = rawSortCache[selectedType].filter(
-      i => GV(i) !== INTERNAL_ENTRY,
-    );
+    const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     const index = list.findIndex(i => GV(i) === value);
     if (index === NOT_FOUND) {
       value = GV(list[FIRST]);
@@ -386,17 +355,12 @@ export function PickMany<VALUE = unknown>({
   function toggleFind(): void {
     mode = mode === "find" ? "select" : "find";
     searchText = "";
-    terminal.keyboard.setKeymap(
-      component,
-      mode === "find" ? KEYMAP_FIND : KEYMAP_NORMAL,
-    );
+    terminal.keyboard.setKeymap(component, mode === "find" ? KEYMAP_FIND : KEYMAP_NORMAL);
     component.render(true);
   }
 
   function top(): void {
-    const list = rawSortCache[selectedType].filter(
-      i => GV(i) !== INTERNAL_ENTRY,
-    );
+    const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     value = GV(list[FIRST]);
     component.render();
   }
@@ -406,10 +370,7 @@ export function PickMany<VALUE = unknown>({
     selectedType = isLeftSide ? "current" : "source";
   }
 
-  function filterMenu(
-    side: MenuSides,
-    updateValue = false,
-  ): MainMenuEntry<VALUE | string>[] {
+  function filterMenu(side: MenuSides, updateValue = false): MainMenuEntry<VALUE | string>[] {
     const data = side === "source" ? source : current;
     lastFilter[side] = terminal.text.fuzzyMenuSort(searchText, data);
     if (is.empty(lastFilter) || updateValue === false) {
@@ -433,9 +394,7 @@ export function PickMany<VALUE = unknown>({
     const currentValue = raw.filter(i => GV(i) !== INTERNAL_ENTRY);
 
     // Move item to current list
-    const item = currentValue.find(
-      ({ entry }) => GV(entry) === value,
-    ) as MainMenuEntry<string>;
+    const item = currentValue.find(({ entry }) => GV(entry) === value) as MainMenuEntry<string>;
     source.push(item);
     // Remove from source
     current = currentValue.filter(({ entry }) => GV(entry) !== value);
@@ -468,10 +427,7 @@ export function PickMany<VALUE = unknown>({
     value = GV(currentValue[index + INCREMENT]);
   }
 
-  function renderSide(
-    currentSide: MenuSides = selectedType,
-    updateValue = false,
-  ): string[] {
+  function renderSide(currentSide: MenuSides = selectedType, updateValue = false): string[] {
     const out: string[] = [];
     let menu = side(currentSide, true);
     if (mode === "find" && !is.empty(searchText)) {
@@ -496,12 +452,11 @@ export function PickMany<VALUE = unknown>({
 
       const colorPrefix = template(` {${altColor} ${prefix}} `);
 
-      const color =
-        selectedType === currentSide
-          ? highlight
-            ? config.terminal.MENU_ENTRY_SELECTED
-            : config.terminal.MENU_ENTRY_NORMAL
-          : config.terminal.MENU_ENTRY_OTHER;
+      const sameSide = highlight
+        ? config.terminal.MENU_ENTRY_SELECTED
+        : config.terminal.MENU_ENTRY_NORMAL;
+
+      const color = selectedType === currentSide ? sameSide : config.terminal.MENU_ENTRY_OTHER;
 
       out.push(colorPrefix + template(`{${color}  ${padded}}`));
     });
@@ -509,18 +464,13 @@ export function PickMany<VALUE = unknown>({
   }
 
   function buildSortCache(currentSide: MenuSides) {
-    const raw = (
-      currentSide === "current" ? current : source
-    ) as MainMenuEntry<VALUE>[];
+    const raw = (currentSide === "current" ? current : source) as MainMenuEntry<VALUE>[];
     // more of an "advanced sort"
     let sortedList = raw
       .filter(i => GV(i) !== INTERNAL_ENTRY)
       .map(item => [
         item,
-        ansiStrip(item.entry[LABEL]).replaceAll(
-          new RegExp("[^A-Za-z0-9]", "g"),
-          "",
-        ),
+        ansiStrip(item.entry[LABEL]).replaceAll(new RegExp("[^A-Za-z0-9]", "g"), ""),
       ]) as [MainMenuEntry<VALUE | string>, string][];
     // Run through all the menu items, and find the highest priority for each type
     const maxPriority: Record<string, number> = {};
@@ -546,9 +496,7 @@ export function PickMany<VALUE = unknown>({
       return DOWN;
     });
 
-    rawSortCache[currentSide] = sortedList.map(
-      ([item]) => item as MainMenuEntry<VALUE | string>,
-    );
+    rawSortCache[currentSide] = sortedList.map(([item]) => item as MainMenuEntry<VALUE | string>);
     if (!hasGroups) {
       sortCache[currentSide] = rawSortCache[currentSide];
       return sortCache[currentSide];
@@ -556,15 +504,10 @@ export function PickMany<VALUE = unknown>({
 
     const out = [] as MainMenuEntry<VALUE | string>[];
 
-    const maxType = ansiMaxLength(
-      ...sortedList.map(([{ type }]) => type ?? ""),
-    );
+    const maxType = ansiMaxLength(...sortedList.map(([{ type }]) => type ?? ""));
     const maxLabel =
       ansiMaxLength(
-        ...sortedList.map(
-          ([{ entry, icon }]) =>
-            entry[LABEL] + (is.empty(icon) ? "" : `${icon} `),
-        ),
+        ...sortedList.map(([{ entry, icon }]) => entry[LABEL] + (is.empty(icon) ? "" : `${icon} `)),
       ) + ARRAY_OFFSET;
     let last = "";
     sortedList.forEach(([item]) => {
@@ -572,7 +515,7 @@ export function PickMany<VALUE = unknown>({
       let prefix = ansiPadEnd(item.type ?? "", maxType);
       // ? Optionally, make it fancy
       if (opt.titleTypes) {
-        prefix = internal.utils.TitleCase(prefix);
+        prefix = internal.utils.titleCase(prefix);
       }
       // ? If it is the same as the previous one (above), then render blank space
       if (last === prefix) {
@@ -609,9 +552,7 @@ export function PickMany<VALUE = unknown>({
     if (range) {
       return terminal.text.selectRange(side(currentSide, false), value, true);
     }
-    const raw = (
-      currentSide === "current" ? current : source
-    ) as MainMenuEntry<VALUE>[];
+    const raw = (currentSide === "current" ? current : source) as MainMenuEntry<VALUE>[];
     if (mode === "find") {
       return terminal.text.fuzzyMenuSort<VALUE>(searchText, raw);
     }
@@ -619,10 +560,7 @@ export function PickMany<VALUE = unknown>({
   }
 
   const component = terminal.registry.registerComponent("pick-many", {
-    configure(
-      options: PickManyComponentOptions<VALUE>,
-      onDone: (type: VALUE[]) => void,
-    ): void {
+    configure(options: PickManyComponentOptions<VALUE>, onDone: (type: VALUE[]) => void): void {
       complete = false;
       final = false;
       done = onDone;
@@ -656,14 +594,8 @@ export function PickMany<VALUE = unknown>({
       }
       const left = `Current ${opt.items}`;
       const right = `Available ${opt.items}`;
-      const current = renderSide(
-        "current",
-        updateValue && selectedType === "current",
-      );
-      const source = renderSide(
-        "source",
-        updateValue && selectedType === "source",
-      );
+      const current = renderSide("current", updateValue && selectedType === "current");
+      const source = renderSide("source", updateValue && selectedType === "source");
       const search = mode === "find" ? searchText : undefined;
       const message = terminal.text.assemble([current, source], {
         left,
@@ -685,7 +617,6 @@ export function PickMany<VALUE = unknown>({
     },
   });
 
-  return async <VALUE extends unknown = unknown>(
-    options: PickManyComponentOptions<VALUE>,
-  ) => await terminal.prompt.pickMany<VALUE>(options);
+  return async <VALUE extends unknown = unknown>(options: PickManyComponentOptions<VALUE>) =>
+    await terminal.prompt.pickMany<VALUE>(options);
 }

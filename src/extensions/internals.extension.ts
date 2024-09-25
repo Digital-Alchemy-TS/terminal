@@ -1,6 +1,9 @@
+/* eslint-disable sonarjs/slow-regex */
+/* eslint-disable sonarjs/regex-complexity */
 /* eslint-disable unicorn/consistent-function-scoping, @typescript-eslint/no-magic-numbers, @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { is, LABEL, SINGLE, START, VALUE } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { ansiStrip, ELLIPSES } from "..";
 import { PromptEntry } from "../helpers";
@@ -10,8 +13,7 @@ const TEMPLATE_REGEX =
 const STYLE_REGEX =
   /(?:^|\.)(?:(?:(\w+)(?:\(([^)]*)\))?)|(?:#(?=[\d:A-Fa-f]{2,})([\dA-Fa-f]{6})?(?::([\dA-Fa-f]{6}))?))/g;
 const STRING_REGEX = /^(["'])((?:\\.|(?!\1)[^\\])*)\1$/;
-const ESCAPE_REGEX =
-  /\\(u(?:[\da-f]{4}|{[\da-f]{1,6}})|x[\da-f]{2}|.)|([^\\])/gi;
+const ESCAPE_REGEX = /\\(u(?:[\da-f]{4}|{[\da-f]{1,6}})|x[\da-f]{2}|.)|([^\\])/gi;
 
 const ESCAPES = new Map([
   ["n", "\n"],
@@ -27,9 +29,6 @@ const ESCAPES = new Map([
 ]);
 
 export async function Internals() {
-  const { execa } = await import("execa");
-  const chalk = (await import("chalk")).default;
-
   function unescape(c) {
     const u = c[0] === "u";
     const bracket = c[1] === "{";
@@ -54,6 +53,8 @@ export async function Internals() {
       const number = Number(chunk);
       if (!Number.isNaN(number)) {
         results.push(number);
+        // TODO: fix this
+        // eslint-disable-next-line sonarjs/no-nested-assignment
       } else if ((matches = chunk.match(STRING_REGEX))) {
         results.push(
           matches[2].replaceAll(ESCAPE_REGEX, (_, escape, character) =>
@@ -61,9 +62,7 @@ export async function Internals() {
           ),
         );
       } else {
-        throw new Error(
-          `Invalid Chalk template style argument: ${chunk} (in style '${name}')`,
-        );
+        throw new Error(`Invalid Chalk template style argument: ${chunk} (in style '${name}')`);
       }
     }
 
@@ -72,14 +71,7 @@ export async function Internals() {
 
   function parseHex(hex) {
     const n = Number.parseInt(hex, 16);
-    return [
-      // eslint-disable-next-line no-bitwise
-      (n >> 16) & 0xff,
-      // eslint-disable-next-line no-bitwise
-      (n >> 8) & 0xff,
-      // eslint-disable-next-line no-bitwise
-      n & 0xff,
-    ];
+    return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
   }
 
   function parseStyle(style) {
@@ -128,8 +120,7 @@ export async function Internals() {
         throw new Error(`Unknown Chalk style: ${styleName}`);
       }
 
-      current =
-        styles.length > 0 ? current[styleName](...styles) : current[styleName];
+      current = styles.length > 0 ? current[styleName](...styles) : current[styleName];
     }
 
     return current;
@@ -140,32 +131,26 @@ export async function Internals() {
     const chunks = [];
     let chunk = [];
 
-    // eslint-disable-next-line max-params
-    string.replaceAll(
-      TEMPLATE_REGEX,
-      (_, escapeCharacter, inverse, style, close, character) => {
-        if (escapeCharacter) {
-          chunk.push(unescape(escapeCharacter));
-        } else if (style) {
-          const string = chunk.join("");
-          chunk = [];
-          chunks.push(
-            styles.length === 0 ? string : buildStyle(styles)(string),
-          );
-          styles.push({ inverse, styles: parseStyle(style) });
-        } else if (close) {
-          if (styles.length === 0) {
-            throw new Error("Found extraneous } in Chalk template literal");
-          }
-
-          chunks.push(buildStyle(styles)(chunk.join("")));
-          chunk = [];
-          styles.pop();
-        } else {
-          chunk.push(character);
+    string.replaceAll(TEMPLATE_REGEX, (_, escapeCharacter, inverse, style, close, character) => {
+      if (escapeCharacter) {
+        chunk.push(unescape(escapeCharacter));
+      } else if (style) {
+        const string = chunk.join("");
+        chunk = [];
+        chunks.push(styles.length === 0 ? string : buildStyle(styles)(string));
+        styles.push({ inverse, styles: parseStyle(style) });
+      } else if (close) {
+        if (styles.length === 0) {
+          throw new Error("Found extraneous } in Chalk template literal");
         }
-      },
-    );
+
+        chunks.push(buildStyle(styles)(chunk.join("")));
+        chunk = [];
+        styles.pop();
+      } else {
+        chunk.push(character);
+      }
+    });
 
     chunks.push(chunk.join(""));
 
@@ -190,7 +175,7 @@ export async function Internals() {
 
     for (let index = 1; index < firstString.raw.length; index++) {
       parts.push(
-        String(arguments_[index - 1]).replaceAll(/[\\{}]/g, "\\$&"),
+        String(arguments_[index - 1]).replaceAll(/[\\{}]/g, String.raw`\$&`),
         String(firstString.raw[index]),
       );
     }
@@ -198,12 +183,7 @@ export async function Internals() {
     return template(parts.join(""));
   }
 
-  function ansiPadEnd(
-    text: string,
-    amount: number,
-    bgColor?: string,
-    char = " ",
-  ): string {
+  function ansiPadEnd(text: string, amount: number, bgColor?: string, char = " "): string {
     const stripped = ansiStrip(text);
     let length = stripped.length;
     if (length > amount) {
@@ -225,10 +205,8 @@ export async function Internals() {
     if (is.empty(item)) {
       return undefined;
     }
-    return item.length === SINGLE
-      ? (item[LABEL] as unknown as T)
-      : (item[VALUE] as T);
+    return item.length === SINGLE ? (item[LABEL] as unknown as T) : (item[VALUE] as T);
   }
 
-  return { GV, ansiPadEnd, chalk, chalkTemplate, execa, template };
+  return { GV, ansiPadEnd, chalkTemplate, template };
 }

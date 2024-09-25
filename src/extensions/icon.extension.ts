@@ -1,4 +1,5 @@
 import { TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { FontAwesomeIcons } from "../icons";
 
@@ -7,17 +8,10 @@ export enum TTYReplacementIcons {
   toggle_off = "toggle_off",
 }
 
-export function IconExtension({ terminal, config }: TServiceParams) {
-  const { chalk } = terminal.internals;
+export function IconExtension({ config }: TServiceParams) {
   const IconMap = new Map<TTYReplacementIcons, string[]>([
-    [
-      TTYReplacementIcons.toggle_on,
-      [FontAwesomeIcons.toggle_on, "*"].map(i => chalk.green(i)),
-    ],
-    [
-      TTYReplacementIcons.toggle_off,
-      [FontAwesomeIcons.toggle_off, "*"].map(i => chalk.red(i)),
-    ],
+    [TTYReplacementIcons.toggle_on, [FontAwesomeIcons.toggle_on, "*"].map(i => chalk.green(i))],
+    [TTYReplacementIcons.toggle_off, [FontAwesomeIcons.toggle_off, "*"].map(i => chalk.red(i))],
   ]);
 
   return {

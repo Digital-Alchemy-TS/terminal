@@ -75,9 +75,7 @@ export type ObjectBuilderSendMessageOptions = {
   timeout?: number;
 };
 
-export type ObjectBuilderSendMessage = (
-  options: ObjectBuilderSendMessageOptions,
-) => void;
+export type ObjectBuilderSendMessage = (options: ObjectBuilderSendMessageOptions) => void;
 // * </Send Message>
 
 // * <Validate>
@@ -113,10 +111,7 @@ export type BuilderValidateOptions<VALUE extends object> = {
 // * </Validate>
 
 // * <Cancel>
-export type BuilderCancelOptions<
-  VALUE extends object,
-  CANCEL extends unknown = never,
-> = {
+export type BuilderCancelOptions<VALUE extends object, CANCEL extends unknown = never> = {
   /**
    * If run, builder will exit.
    *
@@ -159,10 +154,7 @@ type BaseBuilderCancel<VALUE extends object, CANCEL extends unknown = never> = (
 // * </Cancel>
 
 // * <Builder options>
-export type ObjectBuilderOptions<
-  VALUE extends object = object,
-  CANCEL extends unknown = never,
-> = {
+export type ObjectBuilderOptions<VALUE extends object = object, CANCEL extends unknown = never> = {
   /**
    * If provided, the builder will present a cancel option.
    *
@@ -226,8 +218,6 @@ export type ObjectBuilderOptions<
    * On normal exit attempt, run method to perform validation.
    * Ultimately must return true (pass / return result) or false (fail / continue edit).
    */
-  validate?: (
-    options: BuilderValidateOptions<VALUE>,
-  ) => Promise<boolean> | boolean;
+  validate?: (options: BuilderValidateOptions<VALUE>) => Promise<boolean> | boolean;
 };
 // * </Builder options>

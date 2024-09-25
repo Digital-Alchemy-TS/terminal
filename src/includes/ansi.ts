@@ -1,20 +1,12 @@
-import {
-  ARRAY_OFFSET,
-  DOWN,
-  EMPTY,
-  INCREMENT,
-  is,
-  SINGLE,
-  START,
-  UP,
-} from "@digital-alchemy/core";
+/* eslint-disable sonarjs/no-nested-conditional */
+import { ARRAY_OFFSET, DOWN, EMPTY, INCREMENT, is, SINGLE, START, UP } from "@digital-alchemy/core";
 import { cwd, env, platform } from "process";
 
 const UNSORTABLE = new RegExp("[^A-Za-z0-9]", "g");
 export const ELLIPSES = "...";
 const ANSIREGEX_PATTERN = [
-  "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
-  "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
+  String.raw`[\u001B\u009B][[\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\d\/#&.:=?%@~_]+)*|[a-zA-Z\d]+(?:;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)`,
+  String.raw`(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))`,
 ].join("|");
 
 export const ansiStrip = (text = ""): string =>
@@ -27,11 +19,8 @@ export function ansiPadStart(text: string, amount: number): string {
 }
 
 export const ansiSort = (text: string[]): string[] =>
-  text.sort((a, b) =>
-    ansiStrip(a).replaceAll(UNSORTABLE, "") >
-    ansiStrip(b).replaceAll(UNSORTABLE, "")
-      ? UP
-      : DOWN,
+  text.toSorted((a, b) =>
+    ansiStrip(a).replaceAll(UNSORTABLE, "") > ansiStrip(b).replaceAll(UNSORTABLE, "") ? UP : DOWN,
   );
 
 /**
@@ -117,9 +106,7 @@ export const ansiEscapes = {
   eraseLines(count: number) {
     let clear = "";
     for (let i = 0; i < count; i++) {
-      clear +=
-        ansiEscapes.eraseLine +
-        (i < count - ARRAY_OFFSET ? ansiEscapes.cursorUp() : "");
+      clear += ansiEscapes.eraseLine + (i < count - ARRAY_OFFSET ? ansiEscapes.cursorUp() : "");
     }
     if (count) {
       clear += ansiEscapes.cursorLeft;
@@ -143,14 +130,10 @@ export const ansiEscapes = {
       const hasX = options.x !== undefined;
       const hasY = options.y !== undefined;
       if ((hasX || hasY) && !(hasX && hasY && options.length !== undefined)) {
-        throw new Error(
-          "`x`, `y` and `length` must be defined when `x` or `y` is defined",
-        );
+        throw new Error("`x`, `y` and `length` must be defined when `x` or `y` is defined");
       }
       message = message.replaceAll("|", "");
-      returnValue += options.isHidden
-        ? "AddHiddenAnnotation="
-        : "AddAnnotation=";
+      returnValue += options.isHidden ? "AddHiddenAnnotation=" : "AddAnnotation=";
 
       returnValue +=
         options.length > EMPTY
@@ -162,8 +145,7 @@ export const ansiEscapes = {
 
       return returnValue + BEL;
     },
-    setCwd: (workingDirectory = cwd()) =>
-      `${OSC}50;CurrentDir=${workingDirectory}${BEL}`,
+    setCwd: (workingDirectory = cwd()) => `${OSC}50;CurrentDir=${workingDirectory}${BEL}`,
   },
 
   image(

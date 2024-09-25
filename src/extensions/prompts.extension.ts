@@ -1,4 +1,5 @@
 import { DOWN, is, TServiceParams, UP } from "@digital-alchemy/core";
+import chalk from "chalk";
 import { edit } from "external-editor";
 
 import {
@@ -16,11 +17,7 @@ import {
   PromptTimeOptions,
 } from "../helpers";
 import { ansiEscapes } from "../includes";
-import {
-  DateEditorEditorOptions,
-  NumberEditorRenderOptions,
-  StringEditorRenderOptions,
-} from ".";
+import { DateEditorEditorOptions, NumberEditorRenderOptions, StringEditorRenderOptions } from ".";
 
 type TypeFilterMenuOptions<VALUE extends unknown = string> = Omit<
   MenuComponentOptions<VALUE | string>,
@@ -31,7 +28,7 @@ type TypeFilterMenuOptions<VALUE extends unknown = string> = Omit<
 };
 
 export async function Prompts({ terminal, logger, config }: TServiceParams) {
-  const { chalk, template } = terminal.internals;
+  const { template } = terminal.internals;
 
   async function typeFilterMenu<VALUE extends unknown = string>(
     options: TypeFilterMenuOptions<VALUE | string>,
@@ -59,9 +56,7 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
         },
         right: allTypes.map(type => ({
           entry: [type, { TOGGLE_TYPE: type } as VALUE],
-          icon: terminal.icon.getIcon(
-            hide.includes(type) ? "toggle_off" : "toggle_on",
-          ),
+          icon: terminal.icon.getIcon(hide.includes(type) ? "toggle_off" : "toggle_on"),
         })),
         rightHeader: "Types",
         search: {
@@ -118,15 +113,10 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
     /**
      * prompt for a true / false value
      */
-    async boolean({
-      label: message,
-      current = false,
-    }: PromptBooleanOptions): Promise<boolean> {
+    async boolean({ label: message, current = false }: PromptBooleanOptions): Promise<boolean> {
       return (await prompts.menu({
         condensed: true,
-        headerMessage: template(
-          `  ${config.terminal.PROMPT_QUESTION} ${message}`,
-        ),
+        headerMessage: template(`  ${config.terminal.PROMPT_QUESTION} ${message}`),
         right: [{ entry: ["true", true] }, { entry: ["false", false] }],
         search: { enabled: false },
         value: current,
@@ -156,14 +146,14 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
       label,
       ...options
     }: DateEditorEditorOptions = {}): Promise<T> {
-      const result = await terminal.application.activateEditor<
-        DateEditorEditorOptions,
-        string
-      >("date", {
-        current,
-        label,
-        ...options,
-      });
+      const result = await terminal.application.activateEditor<DateEditorEditorOptions, string>(
+        "date",
+        {
+          current,
+          label,
+          ...options,
+        },
+      );
       if (is.array(result)) {
         const [from, to] = result;
         return {
@@ -177,11 +167,10 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
     /**
      * Retrieve date range from user
      */
-    async dateRange({
-      current,
-      label,
-      ...options
-    }: DateEditorEditorOptions = {}): Promise<{ from: Date; to: Date }> {
+    async dateRange({ current, label, ...options }: DateEditorEditorOptions = {}): Promise<{
+      from: Date;
+      to: Date;
+    }> {
       const [from, to] = await terminal.application.activateEditor<
         DateEditorEditorOptions,
         string[]
@@ -232,10 +221,9 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
     /**
      * Build a single object inside a table
      */
-    async objectBuilder<
-      VALUE extends object = object,
-      CANCEL extends unknown = never,
-    >(options: ObjectBuilderOptions<VALUE, CANCEL>): Promise<VALUE | CANCEL> {
+    async objectBuilder<VALUE extends object = object, CANCEL extends unknown = never>(
+      options: ObjectBuilderOptions<VALUE, CANCEL>,
+    ): Promise<VALUE | CANCEL> {
       const result = await terminal.application.activateComponent<
         ObjectBuilderOptions<VALUE, CANCEL>,
         VALUE
@@ -246,10 +234,7 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
     /**
      * Take in a string value, hiding the individual characters from the screen
      */
-    async password({
-      label = `Password value`,
-      current,
-    }: PromptPasswordOptions): Promise<string> {
+    async password({ label = `Password value`, current }: PromptPasswordOptions): Promise<string> {
       return await terminal.application.activateEditor("string", {
         current,
         label,
@@ -260,10 +245,10 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
      * Pick many values from a list of options
      */
     async pickMany<T>(options: PickManyComponentOptions<T>): Promise<T[]> {
-      const result = await terminal.application.activateComponent<
-        PickManyComponentOptions<T>,
-        T[]
-      >("pick-many", options);
+      const result = await terminal.application.activateComponent<PickManyComponentOptions<T>, T[]>(
+        "pick-many",
+        options,
+      );
       return result;
     },
 
@@ -286,6 +271,7 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
         right: options,
         value: current,
       })) as T;
+      // eslint-disable-next-line sonarjs/different-types-comparison
       if (result === cancel) {
         return current as T;
       }

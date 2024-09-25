@@ -1,33 +1,29 @@
 import { TServiceParams } from "@digital-alchemy/core";
 
-import { iBuilderEditor, iComponent } from ".";
+import { TerminalBuilderEditor, TerminalComponent } from ".";
 
 export function Registry(i: TServiceParams) {
   const { logger } = i;
-  const components = new Map<string, iComponent>();
-  const editors = new Map<string, iBuilderEditor>();
+  const components = new Map<string, TerminalComponent>();
+  const editors = new Map<string, TerminalBuilderEditor>();
 
   return {
     component: (name: string) => components.get(name),
     editor: (name: string) => editors.get(name),
-    registerComponent<
-      CONFIG = unknown,
-      VALUE = unknown,
-      CANCEL extends unknown = never,
-    >(
+    registerComponent<CONFIG = unknown, VALUE = unknown, CANCEL extends unknown = never>(
       name: string,
-      component: iComponent<CONFIG, VALUE, CANCEL>,
-    ): iComponent<CONFIG, VALUE, CANCEL> {
+      component: TerminalComponent<CONFIG, VALUE, CANCEL>,
+    ): TerminalComponent<CONFIG, VALUE, CANCEL> {
       logger.trace({ name }, `component registered`);
-      components.set(name, component as iComponent);
+      components.set(name, component as TerminalComponent);
       return component;
     },
     registerEditor<ACTIVE_CONFIG = unknown, VALUE_TYPE = unknown>(
       name: string,
-      editor: iBuilderEditor<ACTIVE_CONFIG, VALUE_TYPE>,
-    ): iBuilderEditor<ACTIVE_CONFIG, VALUE_TYPE> {
+      editor: TerminalBuilderEditor<ACTIVE_CONFIG, VALUE_TYPE>,
+    ): TerminalBuilderEditor<ACTIVE_CONFIG, VALUE_TYPE> {
       logger.trace({ name }, `editor registered`);
-      editors.set(name, editor as iBuilderEditor);
+      editors.set(name, editor as TerminalBuilderEditor);
       return editor;
     },
   };

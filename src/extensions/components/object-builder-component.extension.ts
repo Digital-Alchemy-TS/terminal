@@ -8,6 +8,7 @@ import {
   START,
   TServiceParams,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import {
   BuilderCancelOptions,
@@ -32,26 +33,17 @@ export function ObjectBuilder<
   VALUE extends object = Record<string, unknown>,
   CANCEL extends unknown = never,
 >({ terminal, internal }: TServiceParams) {
-  const { chalk, GV, template } = terminal.internals;
+  const { GV, template } = terminal.internals;
 
   const CANCELLABLE: TTYComponentKeymap = new Map([
     [{ description: "cancel", key: "escape" }, cancel],
   ]);
   const FORM_KEYMAP: TTYComponentKeymap = new Map([
     // While there is no editor
-    [
-      { description: "done", key: "x", modifiers: { ctrl: true } },
-      () => component.onEnd(),
-    ],
+    [{ description: "done", key: "x", modifiers: { ctrl: true } }, () => component.onEnd()],
     [{ description: "cursor up", key: "up" }, onUp],
-    [
-      { description: "top", key: ["pageup", "home"], powerUser: true },
-      onPageUp,
-    ],
-    [
-      { description: "bottom", key: ["pagedown", "end"], powerUser: true },
-      onPageDown,
-    ],
+    [{ description: "top", key: ["pageup", "home"], powerUser: true }, onPageUp],
+    [{ description: "bottom", key: ["pagedown", "end"], powerUser: true }, onPageDown],
     [{ description: "cursor down", key: "down" }, onDown],
     [{ description: chalk.blue.dim("edit cell"), key: "enter" }, enableEdit],
     [
@@ -103,8 +95,7 @@ export function ObjectBuilder<
     return columns()
       .filter(
         ({ path }) =>
-          internal.utils.object.get(original, path) !==
-          internal.utils.object.get(current, path),
+          internal.utils.object.get(original, path) !== internal.utils.object.get(current, path),
       )
       .map(({ path }) => path);
   }
@@ -222,10 +213,7 @@ export function ObjectBuilder<
     await terminal.screen.footerWrap(async () => {
       const column = visibleColumns()[selectedRow];
       const row = value;
-      const current = internal.utils.object.get(
-        is.object(row) ? row : {},
-        column.path,
-      );
+      const current = internal.utils.object.get(is.object(row) ? row : {}, column.path);
       let updated: unknown;
       switch (column.type) {
         case "date": {
@@ -258,9 +246,9 @@ export function ObjectBuilder<
         }
         case "pick-many": {
           const currentValue: unknown[] = is.array(current) ? current : [];
-          const source = column.options.filter(
-            i => !currentValue.includes(GV(i)),
-          ) as MainMenuEntry<VALUE | string>[];
+          const source = column.options.filter(i => !currentValue.includes(GV(i))) as MainMenuEntry<
+            VALUE | string
+          >[];
           const selected = column.options.filter(i =>
             currentValue.includes(GV(i)),
           ) as MainMenuEntry<VALUE | string>[];
@@ -278,20 +266,14 @@ export function ObjectBuilder<
           });
           // TODO: WHY?!
           // The auto erase should catch .. but it doesn't for some reason
-          const { helpText } = column.options.find(
-            i => GV(i.entry) === updated,
-          );
+          const { helpText } = column.options.find(i => GV(i.entry) === updated);
           if (!is.empty(helpText)) {
             terminal.screen.eraseLine(HELP_ERASE_SIZE);
           }
           break;
         }
       }
-      internal.utils.object.set(
-        is.object(row) ? row : {},
-        column.path,
-        updated,
-      );
+      internal.utils.object.set(is.object(row) ? row : {}, column.path, updated);
     });
     component.render();
   }
@@ -381,9 +363,7 @@ export function ObjectBuilder<
     if (opt.sanitize === "defined-paths") {
       done(
         Object.fromEntries(
-          Object.entries(value).filter(([key]) =>
-            columns().some(({ path }) => path === key),
-          ),
+          Object.entries(value).filter(([key]) => columns().some(({ path }) => path === key)),
         ) as VALUE,
       );
       return;
@@ -391,9 +371,7 @@ export function ObjectBuilder<
     // Only return properties for
     done(
       Object.fromEntries(
-        Object.entries(value).filter(([key]) =>
-          visibleColumns().some(({ path }) => path === key),
-        ),
+        Object.entries(value).filter(([key]) => visibleColumns().some(({ path }) => path === key)),
       ) as VALUE,
     );
   }
@@ -407,11 +385,7 @@ export function ObjectBuilder<
     // Might as well make it the official default
     if (is.undefined(column.default)) {
       if (column.type === "pick-one") {
-        internal.utils.object.set(
-          value,
-          column.path,
-          GV(column.options[START]),
-        );
+        internal.utils.object.set(value, column.path, GV(column.options[START]));
       }
       return;
     }
@@ -457,7 +431,7 @@ export function ObjectBuilder<
 
       // Build up some defaults on the elements
       config.elements = config.elements.map(i => {
-        i.name ??= internal.utils.TitleCase(i.path);
+        i.name ??= internal.utils.titleCase(i.path);
         return i;
       });
 
@@ -495,7 +469,6 @@ export function ObjectBuilder<
             position = "below-bar",
             immediateClear = false,
             // TODO This shouldn't be a thing
-            // eslint-disable-next-line sonarjs/no-identical-functions
           }) => {
             if (displayMessageTimeout) {
               displayMessageTimeout.kill("stop");

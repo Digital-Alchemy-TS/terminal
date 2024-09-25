@@ -8,6 +8,7 @@ import {
   START,
   TServiceParams,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { TTYComponentKeymap } from "../../helpers";
 import { ansiStrip, ELLIPSES } from "../../includes";
@@ -31,7 +32,7 @@ const DEFAULT_PLACEHOLDER = "enter value";
 const INTERNAL_PADDING = " ";
 
 export function NumberEditor({ terminal, config }: TServiceParams) {
-  const { chalk, ansiPadEnd, template } = terminal.internals;
+  const { ansiPadEnd, template } = terminal.internals;
   const KEYMAP: TTYComponentKeymap = new Map([
     [{ catchAll: true, description: "key press", powerUser: true }, onKeyPress],
     [{ description: "done", key: "enter" }, onEnd],
@@ -120,9 +121,7 @@ export function NumberEditor({ terminal, config }: TServiceParams) {
         if (cursor === EMPTY) {
           return;
         }
-        value = [...value]
-          .filter((_, index) => index !== cursor - ARRAY_OFFSET)
-          .join("");
+        value = [...value].filter((_, index) => index !== cursor - ARRAY_OFFSET).join("");
         cursor--;
         return;
       }
@@ -139,9 +138,7 @@ export function NumberEditor({ terminal, config }: TServiceParams) {
   }
 
   function renderBox(bgColor: string): void {
-    let current = is.empty(value)
-      ? opt.placeholder ?? DEFAULT_PLACEHOLDER
-      : value;
+    let current = is.empty(value) ? (opt.placeholder ?? DEFAULT_PLACEHOLDER) : value;
     const maxLength = opt.width - PADDING;
     const out: string[] = [];
     if (opt.label) {
@@ -151,9 +148,9 @@ export function NumberEditor({ terminal, config }: TServiceParams) {
     const stripped = ansiStrip(current);
     let length = stripped.length;
     if (length > maxLength - ELLIPSES.length) {
-      const update =
-        ELLIPSES + stripped.slice((maxLength - ELLIPSES.length) * INVERT_VALUE);
+      const update = ELLIPSES + stripped.slice((maxLength - ELLIPSES.length) * INVERT_VALUE);
       current = current.replace(stripped, update);
+      // eslint-disable-next-line sonarjs/no-dead-store
       length = update.length;
     }
     current =
@@ -168,10 +165,7 @@ export function NumberEditor({ terminal, config }: TServiceParams) {
     out.push(
       // TODO fix this hack
       chalk[bgColor as "red"].black(
-        ansiPadEnd(
-          INTERNAL_PADDING + current + INTERNAL_PADDING,
-          maxLength + PADDING,
-        ),
+        ansiPadEnd(INTERNAL_PADDING + current + INTERNAL_PADDING, maxLength + PADDING),
       ),
     );
     const message = terminal.text.pad(out.join(`\n`));
@@ -185,10 +179,7 @@ export function NumberEditor({ terminal, config }: TServiceParams) {
   }
 
   const editor = terminal.registry.registerEditor("number", {
-    configure(
-      config: NumberEditorRenderOptions,
-      onDone: (type: unknown) => void,
-    ) {
+    configure(config: NumberEditorRenderOptions, onDone: (type: unknown) => void) {
       opt = config;
       complete = false;
       reset();

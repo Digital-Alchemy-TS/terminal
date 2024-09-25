@@ -31,9 +31,7 @@ export type HighlightCallbacks<VALUE = string> = {
    * }
    * ```
    */
-  highlightMatch?: (
-    value: VALUE,
-  ) => boolean | ((description: string) => string);
+  highlightMatch?: (value: VALUE) => boolean | ((description: string) => string);
   normal?: (description: string) => string;
   valueMatch?: (description: string) => string;
 };
@@ -44,9 +42,7 @@ export type AdvancedKeymap<VALUE = string> = {
   highlight?: "auto" | HighlightCallbacks<VALUE>;
 };
 
-export type KeymapOptions<VALUE = string> =
-  | PromptEntry<VALUE>
-  | AdvancedKeymap<VALUE>;
+export type KeymapOptions<VALUE = string> = PromptEntry<VALUE> | AdvancedKeymap<VALUE>;
 
 export type KeyMap<VALUE = string> = Record<string, KeymapOptions<VALUE>>;
 export type MenuPosition = ["left" | "right", number];

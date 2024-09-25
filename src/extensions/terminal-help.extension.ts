@@ -11,6 +11,7 @@ import {
   TServiceParams,
   UP,
 } from "@digital-alchemy/core";
+import chalk from "chalk";
 import { exit } from "process";
 
 import { ansiMaxLength } from "../includes";
@@ -25,23 +26,14 @@ function formatDescription(prefix: string, description: string | string[]) {
       .map(i =>
         i
           .split(". ")
-          .map((line, index) =>
-            index === EMPTY ? line : " ".repeat(size) + line,
-          )
+          .map((line, index) => (index === EMPTY ? line : " ".repeat(size) + line))
           .join(`.\n`),
       )
       .join("\n")
   );
 }
 
-export function TerminalHelp({
-  terminal,
-  lifecycle,
-  config,
-  internal,
-}: TServiceParams) {
-  const { chalk } = terminal.internals;
-
+export function TerminalHelp({ terminal, lifecycle, config, internal }: TServiceParams) {
   lifecycle.onPostConfig(() => {
     if (!config.terminal.HELP) {
       return;
@@ -49,17 +41,13 @@ export function TerminalHelp({
     terminal.application.setHeader("Help");
     const ALL_SWITCHES: string[] = [];
 
-    const configDefinitions =
-      internal.boilerplate.configuration.getDefinitions();
+    const configDefinitions = internal.boilerplate.configuration.getDefinitions();
 
     configDefinitions.forEach(configuration =>
-      ALL_SWITCHES.push(
-        ...Object.entries(configuration).map(([property]) => property),
-      ),
+      ALL_SWITCHES.push(...Object.entries(configuration).map(([property]) => property)),
     );
     terminal.screen.down();
-    const LONGEST =
-      Math.max(...ALL_SWITCHES.map(line => line.length)) + INCREMENT;
+    const LONGEST = Math.max(...ALL_SWITCHES.map(line => line.length)) + INCREMENT;
     configDefinitions.forEach((configuration, project) => {
       printProject(project, configuration, LONGEST);
     });
@@ -72,15 +60,12 @@ export function TerminalHelp({
     LONGEST: number,
   ) {
     terminal.screen.printLine(
-      chalk`Provided by {magenta.bold ${internal.utils.TitleCase(project)}}`,
+      chalk`Provided by {magenta.bold ${internal.utils.titleCase(project)}}`,
     );
     Object.entries(configuration)
       .sort(([a], [b]) => (a > b ? UP : DOWN))
       .forEach(([property, config]) => {
-        property = property
-          .replaceAll("-", "_")
-          .toLocaleLowerCase()
-          .padEnd(LONGEST, " ");
+        property = property.replaceAll("-", "_").toLocaleLowerCase().padEnd(LONGEST, " ");
         switch (config.type) {
           case "number": {
             numberSwitch(property, config as NumberConfig);
@@ -96,7 +81,7 @@ export function TerminalHelp({
           }
           default:
             return;
-            otherSwitch(property, config);
+          // otherSwitch(property, config);
         }
         terminal.screen.down();
       });
@@ -125,14 +110,10 @@ export function TerminalHelp({
   }
 
   function otherSwitch(property: string, config: BaseConfig) {
-    const prefix = chalk`  {${
-      config.required ? "red.bold" : "white"
-    } --${property}} {gray [other}${
+    const prefix = chalk`  {${config.required ? "red.bold" : "white"} --${property}} {gray [other}${
       is.undefined(config.default)
         ? ""
-        : chalk`, {gray default}: {bold.magenta ${JSON.stringify(
-            config.default,
-          )}}`
+        : chalk`, {gray default}: {bold.magenta ${JSON.stringify(config.default)}}`
     }{gray ]} `;
     terminal.screen.printLine(formatDescription(prefix, config.description));
   }
@@ -140,9 +121,7 @@ export function TerminalHelp({
   function stringSwitch(property: string, config: StringConfig<string>): void {
     let enums = "";
     if (is.empty(config.enum)) {
-      const enumList = config.enum
-        .map(item => chalk.blue(item))
-        .join(chalk("{yellow.dim  | }"));
+      const enumList = config.enum.map(item => chalk.blue(item)).join(chalk("{yellow.dim  | }"));
       enums = chalk`{gray , enum}: ${enumList}`;
     }
 
@@ -155,4 +134,6 @@ export function TerminalHelp({
     const prefix = chalk`  {${color} --${property}} {gray [{bold string}}${defaultValue}${enums}{gray ]} `;
     terminal.screen.printLine(formatDescription(prefix, config.description));
   }
+
+  return { otherSwitch };
 }

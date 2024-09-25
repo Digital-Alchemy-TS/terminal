@@ -1,21 +1,12 @@
 import { deepExtend, is, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
-import {
-  ArrayBuilderOptions,
-  KeyMap,
-  MainMenuCB,
-  MainMenuEntry,
-  MenuEntry,
-} from "../../helpers";
+import { ArrayBuilderOptions, KeyMap, MainMenuCB, MainMenuEntry, MenuEntry } from "../../helpers";
 import { ComponentDoneCallback } from "..";
 
 type TypeToggle = { type: string };
 
-export function ArrayBuilder<VALUE extends object>({
-  terminal,
-  internal,
-}: TServiceParams) {
-  const { chalk } = terminal.internals;
+export function ArrayBuilder<VALUE extends object>({ terminal, internal }: TServiceParams) {
   let complete = false;
   let disabledTypes: string[] = [];
   let done: ComponentDoneCallback<VALUE>;
@@ -45,9 +36,7 @@ export function ArrayBuilder<VALUE extends object>({
           cancelFunction(cancel);
           return;
         }
-        const status = await confirm(
-          "Are you sure you want to discard changes?",
-        );
+        const status = await confirm("Are you sure you want to discard changes?");
         if (status) {
           cancelFunction(cancel);
         }
@@ -61,10 +50,7 @@ export function ArrayBuilder<VALUE extends object>({
     });
   }
   const component = terminal.registry.registerComponent("array", {
-    configure(
-      options: ArrayBuilderOptions<VALUE>,
-      onDone: ComponentDoneCallback<VALUE>,
-    ): void {
+    configure(options: ArrayBuilderOptions<VALUE>, onDone: ComponentDoneCallback<VALUE>): void {
       rows = deepExtend([], options.current ?? []);
       selectedRow = START;
       disabledTypes = [];
@@ -72,8 +58,7 @@ export function ArrayBuilder<VALUE extends object>({
       complete = false;
       final = false;
       done = onDone;
-      options.cancelMessage ??=
-        "Are you sure you want to cancel building this object?";
+      options.cancelMessage ??= "Are you sure you want to cancel building this object?";
       options.header ??= "Array builder";
       options.valuesLabel ??= "Values";
     },
@@ -118,11 +103,7 @@ export function ArrayBuilder<VALUE extends object>({
 
         if (!is.empty(options.typePath)) {
           toggles = is
-            .unique(
-              rows.map(row =>
-                String(internal.utils.object.get(row, options.typePath)),
-              ),
-            )
+            .unique(rows.map(row => String(internal.utils.object.get(row, options.typePath))))
             .map((type: string) => {
               return {
                 entry: [type, { type }],
@@ -149,10 +130,7 @@ export function ArrayBuilder<VALUE extends object>({
       const left = rows
         .map(row => {
           return {
-            entry: [
-              internal.utils.object.get(row, String(options.labelPath)),
-              { value: row },
-            ],
+            entry: [internal.utils.object.get(row, String(options.labelPath)), { value: row }],
             // Maybe one day dot notation will actually be relevant to this
             type: is.empty(options.typePath)
               ? undefined
@@ -173,10 +151,7 @@ export function ArrayBuilder<VALUE extends object>({
             return chalk`Can only use toggle on {magenta.bold Show Group} entries.`;
           }
           case "remove": {
-            if (
-              is.object(value) &&
-              !is.undefined((value as ValueToggle).value)
-            ) {
+            if (is.object(value) && !is.undefined((value as ValueToggle).value)) {
               valueRemove = value as ValueToggle;
               return true;
             }
@@ -210,7 +185,8 @@ export function ArrayBuilder<VALUE extends object>({
         } else if (is.undefined((result as ValueToggle).value)) {
           return;
         } else {
-          result = result as ValueToggle;
+          // TODO: why was this assignment here?
+          // result = result as ValueToggle;
           result = "edit";
         }
       }
@@ -240,10 +216,7 @@ export function ArrayBuilder<VALUE extends object>({
 
         // create a new row
         case "add": {
-          const add = await objectBuild(
-            deepExtend({}, options.defaultRow),
-            cancel,
-          );
+          const add = await objectBuild(deepExtend({}, options.defaultRow), cancel);
           if (add !== cancel) {
             rows.push(add);
           }
@@ -272,10 +245,7 @@ export function ArrayBuilder<VALUE extends object>({
 
         // edit a row
         case "edit": {
-          const build = await objectBuild(
-            deepExtend({}, rows[selectedRow]),
-            cancel,
-          );
+          const build = await objectBuild(deepExtend({}, rows[selectedRow]), cancel);
           if (build !== cancel) {
             rows[selectedRow] = build;
           }

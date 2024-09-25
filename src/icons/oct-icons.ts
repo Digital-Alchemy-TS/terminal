@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/future-reserved-words */
 export enum OctIcons {
   "alert" = "\uF421",
   "arrow_down" = "\uF433",

@@ -1,11 +1,5 @@
-import {
-  ARRAY_OFFSET,
-  HALF,
-  is,
-  SINGLE,
-  START,
-  TServiceParams,
-} from "@digital-alchemy/core";
+import { ARRAY_OFFSET, HALF, is, SINGLE, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
 import { ObjectBuilderOptions, TableBuilderElement } from "../helpers";
 import { ansiMaxLength } from "../includes";
@@ -39,7 +33,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
   internal,
   config,
 }: TServiceParams) {
-  const { chalk, ansiPadEnd, template } = terminal.internals;
+  const { ansiPadEnd, template } = terminal.internals;
 
   Object.keys(TABLE_PARTS).forEach(
     key =>
@@ -50,10 +44,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
 
   const NAME_CELL = (i: ColumnInfo, max?: number) =>
     template(
-      `${" ".repeat(PADDING)}{bold.blue ${i.name.padEnd(
-        (max ?? i.maxWidth) - PADDING,
-        " ",
-      )}}`,
+      `${" ".repeat(PADDING)}{bold.blue ${i.name.padEnd((max ?? i.maxWidth) - PADDING, " ")}}`,
     );
   let activeOptions: ObjectBuilderOptions<VALUE>;
   let columns: ColumnInfo[];
@@ -63,7 +54,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
 
   function calcColumns(values: VALUE[]): void {
     columns = activeOptions.elements.map(item => {
-      item.name ??= internal.utils.TitleCase(item.path);
+      item.name ??= internal.utils.titleCase(item.path);
       return {
         maxWidth: Math.max(
           MIN_CELL_WIDTH,
@@ -72,9 +63,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
             ansiMaxLength(
               ...values.map(row => {
                 const value = internal.utils.object.get(row, item.path);
-                return item.format
-                  ? item.format(value)
-                  : terminal.text.type(value);
+                return item.format ? item.format(value) : terminal.text.type(value);
               }),
             ) +
             PADDING,
@@ -100,9 +89,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
           TABLE_PARTS.left,
           ...activeOptions.elements.map((element, colIndex) => {
             const value = internal.utils.object.get(i, String(element.path));
-            const types = element.format
-              ? element.format(value)
-              : terminal.text.type(value);
+            const types = element.format ? element.format(value) : terminal.text.type(value);
             const content =
               " ".repeat(PADDING) +
               (selectedRow === rowIndex && selectedCell === colIndex
@@ -110,9 +97,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
                 : types);
             const cell = ansiPadEnd(content, columns[colIndex].maxWidth);
             const append =
-              colIndex === columns.length - ARRAY_OFFSET
-                ? TABLE_PARTS.right
-                : TABLE_PARTS.middle;
+              colIndex === columns.length - ARRAY_OFFSET ? TABLE_PARTS.right : TABLE_PARTS.middle;
             return cell + append;
           }),
         ].join("");
@@ -148,13 +133,8 @@ export function Table<VALUE extends object = Record<string, unknown>>({
     }
     // </Top end of range>
     // <Bottom end of range>
-    if (
-      selectedRow >=
-      entries.length - config.terminal.PAGE_SIZE + BUFFER_SIZE + SINGLE
-    ) {
-      const selected = entries.slice(
-        entries.length - config.terminal.PAGE_SIZE + PADDING,
-      );
+    if (selectedRow >= entries.length - config.terminal.PAGE_SIZE + BUFFER_SIZE + SINGLE) {
+      const selected = entries.slice(entries.length - config.terminal.PAGE_SIZE + PADDING);
       preMessage = `${entries.length - selected.length} before`;
       preLength = ansiMaxLength(entries) - preMessage.length - EXTRA;
       preMessage = [
@@ -197,9 +177,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
     return [
       [
         TABLE_PARTS.top_left,
-        columns
-          .map(i => TABLE_PARTS.top.repeat(i.maxWidth))
-          .join(TABLE_PARTS.top_mid),
+        columns.map(i => TABLE_PARTS.top.repeat(i.maxWidth)).join(TABLE_PARTS.top_mid),
         TABLE_PARTS.top_right,
       ].join(``),
       [
@@ -209,9 +187,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
       ].join(""),
       [
         TABLE_PARTS.left_mid,
-        columns
-          .map(i => TABLE_PARTS.mid.repeat(i.maxWidth))
-          .join(TABLE_PARTS.mid_mid),
+        columns.map(i => TABLE_PARTS.mid.repeat(i.maxWidth)).join(TABLE_PARTS.mid_mid),
         TABLE_PARTS.right_mid,
       ].join(""),
     ];
@@ -233,25 +209,19 @@ export function Table<VALUE extends object = Record<string, unknown>>({
       const r = rows();
       const middle_bar = [
         TABLE_PARTS.left_mid,
-        columns
-          .map(i => TABLE_PARTS.bottom.repeat(i.maxWidth))
-          .join(TABLE_PARTS.mid_mid),
+        columns.map(i => TABLE_PARTS.bottom.repeat(i.maxWidth)).join(TABLE_PARTS.mid_mid),
         TABLE_PARTS.right_mid,
       ].join("");
       if (is.empty(r)) {
         const [top, content] = header;
         if (!is.empty(emptyMessage)) {
-          const length =
-            ansiMaxLength(top) - emptyMessage.length - PADDING - PADDING;
+          const length = ansiMaxLength(top) - emptyMessage.length - PADDING - PADDING;
           emptyMessage = [
             TABLE_PARTS.left,
             emptyMessage
               .padStart(length * HALF + emptyMessage.length, " ")
               .padEnd(length + emptyMessage.length, " ")
-              .replace(
-                ` ${emptyMessage} `,
-                chalk.yellow.inverse(` ${emptyMessage} `),
-              ),
+              .replace(` ${emptyMessage} `, chalk.yellow.inverse(` ${emptyMessage} `)),
             TABLE_PARTS.right,
           ].join("");
           return [
@@ -259,9 +229,7 @@ export function Table<VALUE extends object = Record<string, unknown>>({
             content,
             [
               TABLE_PARTS.left_mid,
-              columns
-                .map(i => TABLE_PARTS.mid.repeat(i.maxWidth))
-                .join(TABLE_PARTS.bottom_mid),
+              columns.map(i => TABLE_PARTS.mid.repeat(i.maxWidth)).join(TABLE_PARTS.bottom_mid),
               TABLE_PARTS.right_mid,
             ].join(""),
             emptyMessage,

@@ -1,14 +1,9 @@
 import { each, is, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 
-import {
-  DirectCB,
-  KeyDescriptor,
-  KeyModifiers,
-  TTYComponentKeymap,
-} from "../helpers";
+import { DirectCB, KeyDescriptor, KeyModifiers, TTYComponentKeymap } from "../helpers";
 
 export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
-  const { chalk } = terminal.internals;
   let activeKeymaps: Map<unknown, TTYComponentKeymap> = new Map();
 
   lifecycle.onPreInit(() => {
@@ -18,7 +13,6 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
     });
   });
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   async function keyPressHandler(descriptor: KeyDescriptor): Promise<void> {
     if (is.empty(activeKeymaps)) {
       return;
@@ -44,8 +38,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
           return;
         }
         const allMatch = Object.entries(options.modifiers ?? {}).every(
-          ([modifier, value]) =>
-            modifiers[modifier as keyof typeof modifiers] === value,
+          ([modifier, value]) => modifiers[modifier as keyof typeof modifiers] === value,
         );
         if (!allMatch) {
           return;
@@ -64,11 +57,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
   }
 
   const manager = {
-    focus<T>(
-      target: unknown,
-      map: TTYComponentKeymap,
-      value: Promise<T>,
-    ): Promise<T> {
+    focus<T>(target: unknown, map: TTYComponentKeymap, value: Promise<T>): Promise<T> {
       return new Promise(async done => {
         const currentMap = activeKeymaps;
         activeKeymaps = new Map([[target, map]]);
@@ -102,13 +91,8 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
       );
       activeKeymaps.set(target, result);
       result.forEach(key => {
-        if (
-          is.string(key) &&
-          !is.function(target[key as keyof typeof target])
-        ) {
-          terminal.screen.printLine(
-            chalk.yellow.inverse` MISSING CALLBACK {bold ${key}} `,
-          );
+        if (is.string(key) && !is.function(target[key as keyof typeof target])) {
+          terminal.screen.printLine(chalk.yellow.inverse` MISSING CALLBACK {bold ${key}} `);
         }
       });
     },

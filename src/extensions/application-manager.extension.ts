@@ -1,22 +1,19 @@
 import { is, START, TServiceParams } from "@digital-alchemy/core";
+import chalk from "chalk";
 import figlet from "figlet";
 
 import { ansiMaxLength } from "../includes";
 
-export interface iBuilderEditor<ACTIVE_CONFIG = unknown, VALUE_TYPE = unknown> {
-  configure: (
-    config: ACTIVE_CONFIG,
-    done: (type: VALUE_TYPE | VALUE_TYPE[]) => void,
-  ) => void;
+export interface TerminalBuilderEditor<ACTIVE_CONFIG = unknown, VALUE_TYPE = unknown> {
+  configure: (config: ACTIVE_CONFIG, done: (type: VALUE_TYPE | VALUE_TYPE[]) => void) => void;
   // Just dump it all in there, don't worry about it
   render(): void;
 }
-export type ComponentDoneCallback<
-  VALUE_TYPE = unknown,
-  CANCEL extends unknown = never,
-> = (type?: VALUE_TYPE | VALUE_TYPE[] | CANCEL) => void;
+export type ComponentDoneCallback<VALUE_TYPE = unknown, CANCEL extends unknown = never> = (
+  type?: VALUE_TYPE | VALUE_TYPE[] | CANCEL,
+) => void;
 
-export interface iComponent<
+export interface TerminalComponent<
   CONFIG = unknown,
   VALUE = unknown,
   CANCEL extends unknown = never,
@@ -28,7 +25,7 @@ export interface iComponent<
 }
 
 export function ApplicationManager({ config, terminal }: TServiceParams) {
-  const { chalk, template } = terminal.internals;
+  const { template } = terminal.internals;
   function headerPad(text: string, color: string): string {
     const leftPadding = " ".repeat(config.terminal.APPLICATION_PADDING_LEFT);
     text = template(`{${color} ${text.trim()}}`)
@@ -38,7 +35,7 @@ export function ApplicationManager({ config, terminal }: TServiceParams) {
     terminal.screen.printLine(text);
     return text;
   }
-  let activeEditor: iBuilderEditor;
+  let activeEditor: TerminalBuilderEditor;
   let header = "";
   let parts: [primary: string, secondary: string] | [primary: string] = [""];
 
@@ -61,16 +58,13 @@ export function ApplicationManager({ config, terminal }: TServiceParams) {
             if (!component) {
               terminal.screen.printLine(
                 // ? It probably wasn't listed in the providers anywhere
-                chalk.bgRed.bold
-                  .white` Cannot find component {underline ${name}} `,
+                chalk.bgRed.bold.white` Cannot find component {underline ${name}} `,
               );
               return;
             }
             // There needs to be more type work around this
             // It's a disaster
-            await component.configure(configuration, value =>
-              done(value as VALUE),
-            );
+            await component.configure(configuration, value => done(value as VALUE));
             out.activeApplication = component;
             component.render();
           }),
@@ -103,7 +97,7 @@ export function ApplicationManager({ config, terminal }: TServiceParams) {
       });
     },
 
-    activeApplication: undefined as iComponent,
+    activeApplication: undefined as TerminalComponent,
 
     /**
      * How wide is the header message at it's widest?

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/future-reserved-words */
 export enum MDIIcons {
   "access_point" = "\uF501",
   "access_point_network" = "\uF502",

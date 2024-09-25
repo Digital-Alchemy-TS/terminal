@@ -1,5 +1,5 @@
 import { CustomIcons } from "./custom-icons";
-import { DevIcons } from "./dev-icons";
+import { DevelopmentIcons } from "./dev-icons";
 import { FontAwesomeIcons } from "./fa-icons";
 import { FontAwesomeExtendedIcons } from "./fae-icons";
 import { LinuxIcons } from "./linux-icons";
@@ -13,7 +13,7 @@ import { WeatherIcons } from "./weather-icons";
 
 export const TTYIcons = {
   custom: CustomIcons,
-  dev: DevIcons,
+  dev: DevelopmentIcons,
   font_awesome: FontAwesomeIcons,
   font_awesome_extended: FontAwesomeExtendedIcons,
   linux: LinuxIcons,
