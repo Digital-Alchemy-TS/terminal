@@ -3,7 +3,7 @@
   "name": "@digital-alchemy/terminal",
   "repository": "https://github.com/Digital-Alchemy-TS/terminal",
   "homepage": "https://docs.digital-alchemy.app",
-  "version": "24.7.2",
+  "version": "24.9.1",
   "scripts": {
     "build": "tsc",
     "test": "./scripts/test.sh",
@@ -41,25 +41,25 @@
   },
   "devDependencies": {
     "@cspell/eslint-plugin": "^8.14.4",
-    "@digital-alchemy/core": "^24.8.4",
-    "@digital-alchemy/utils": "^24.8.4",
+    "@digital-alchemy/core": "^24.9.3",
+    "@digital-alchemy/utils": "^24.9.1",
     "@eslint/compat": "^1.1.1",
     "@eslint/eslintrc": "^3.1.0",
-    "@eslint/js": "^9.11.0",
+    "@eslint/js": "^9.11.1",
     "@types/figlet": "^1.5.8",
     "@types/jest": "^29.5.13",
     "@types/js-yaml": "^4.0.9",
     "@types/minimist": "^1.2.5",
     "@types/mute-stream": "^0.0.4",
-    "@types/node": "^22.5.5",
+    "@types/node": "^22.7.0",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "8.6.0",
-    "@typescript-eslint/parser": "8.6.0",
-    "eslint": "9.11.0",
+    "@typescript-eslint/eslint-plugin": "8.7.0",
+    "@typescript-eslint/parser": "8.7.0",
+    "eslint": "9.11.1",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jsonc": "^2.16.0",
-    "eslint-plugin-no-unsanitized": "^4.1.0",
+    "eslint-plugin-no-unsanitized": "^4.1.1",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -74,10 +74,6 @@
     "tsx": "^4.19.1",
     "type-fest": "^4.26.1",
     "typescript": "^5.6.2"
-  },
-  "resolutions": {
-    "@digital-alchemy/core": "portal:/home/zoe/DigitalAlchemyTS/core",
-    "@digital-alchemy/utils": "portal:/home/zoe/DigitalAlchemyTS/utils"
   },
   "packageManager": "yarn@4.5.0"
 }
