@@ -22,6 +22,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
     let mixed = name ?? sequence ?? "enter";
     // Standardize the "done" key
     mixed = mixed === "return" ? "enter" : mixed;
+
     const catchAll: [unknown, DirectCB][] = [];
     const direct: [unknown, DirectCB][] = [];
     const modifiers: KeyModifiers = { ctrl, meta, shift };

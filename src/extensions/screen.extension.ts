@@ -32,7 +32,8 @@ function breakLines(content: string, width: number): string {
   return content
     .split("\n")
     .flatMap(line => {
-      const chunk = regex.exec(line);
+      // eslint-disable-next-line sonarjs/sonar-prefer-regexp-exec
+      const chunk = line.match(regex);
       chunk?.pop();
       return chunk || "";
     })

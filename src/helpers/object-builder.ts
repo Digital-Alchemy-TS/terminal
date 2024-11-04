@@ -40,6 +40,7 @@ export type TableBuilderElement<
   | {
       default?: ObjectBuilderDefault<Get<VALUE, PATH>[], VALUE>;
       options: MainMenuEntry<Get<VALUE, PATH>>[];
+      items?: string;
       type: "pick-many";
     }
 );

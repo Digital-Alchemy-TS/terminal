@@ -51,7 +51,7 @@ type MenuRestoreCacheData<VALUE = unknown> = {
 };
 const DEFAULT_HEADER_PADDING = 4;
 
-const CACHE_KEY_RESTORE = (id: string) => `MENU_COMPONENT_RESTORE_${id}`;
+// const CACHE_KEY_RESTORE = (id: string) => `MENU_COMPONENT_RESTORE_${id}`;
 
 interface LastMenuResultInfo<VALUE = unknown> {
   key?: {
@@ -133,7 +133,7 @@ function isSearchEnabled(options: MenuSearchOptions) {
 let LAST_RESULT: LastMenuResultInfo<unknown>;
 type LR = "left" | "right";
 
-export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TServiceParams) {
+export function Menu<VALUE = unknown>({ config, terminal, internal }: TServiceParams) {
   const { ansiPadEnd, template, GV } = terminal.internals;
 
   let value: VALUE;
@@ -1089,7 +1089,8 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
 
     // If a restore id is available, attempt to get data from that
     if (!is.empty(restore?.id)) {
-      const data = await cache.get<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(restore.id));
+      const data = undefined as MenuRestoreCacheData<VALUE>;
+      // const data = await cache.get<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(restore.id));
 
       if (data) {
         // Position based value restoration
@@ -1249,14 +1250,14 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
       };
       component.render();
       done = undefined;
-      if (opt.restore) {
-        setImmediate(async () => {
-          await cache.set<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(opt.restore?.id), {
-            position: [selectedType, index],
-            value: GV(list[index]) ?? value,
-          });
-        });
-      }
+      // if (opt.restore) {
+      //   setImmediate(async () => {
+      //     await cache.set<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(opt.restore?.id), {
+      //       position: [selectedType, index],
+      //       value: GV(list[index]) ?? value,
+      //     });
+      //   });
+      // }
     },
 
     /**

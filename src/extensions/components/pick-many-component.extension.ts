@@ -105,6 +105,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
   let source: MainMenuEntry<VALUE | string>[];
   let hasGroups: boolean;
 
+  // #MARK: add
   function add(): void {
     setImmediate(() => {
       updateSortCache();
@@ -158,12 +159,14 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     value = GV(sourceList[index + INCREMENT]);
   }
 
+  // #MARK: bottom
   function bottom(): void {
     const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     value = GV(list[list.length - ARRAY_OFFSET]);
     component.render();
   }
 
+  // #MARK: pageDown
   function pageDown(): void {
     const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     const index = list.findIndex(i => GV(i) === value);
@@ -172,6 +175,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: pageUp
   function pageUp(): void {
     const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     const index = list.findIndex(i => GV(i) === value);
@@ -180,11 +184,13 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: cancel
   function cancel(): void {
     reset();
     component.onEnd();
   }
 
+  // #MARK: invert
   function invert(): void {
     const temporary = source;
     source = current;
@@ -194,6 +200,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: navigateSearch
   function navigateSearch(key: string): void {
     setImmediate(() => component.render());
     const all = lastFilter[selectedType];
@@ -219,6 +226,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     }
   }
 
+  // #MARK: next
   function next(): void {
     setImmediate(() => component.render());
     const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
@@ -235,6 +243,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     value = GV(list[index + INCREMENT]);
   }
 
+  // #MARK: numericSelect
   function numericSelect(mixed: string): void {
     numericSelection = mixed;
     const item = side()[Number(is.empty(numericSelection) ? "1" : numericSelection) - ARRAY_OFFSET];
@@ -242,6 +251,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: onLeft
   function onLeft(): void {
     const [left, right] = [side("current", true), side("source", true)];
     if (is.empty(left) || selectedType === "current") {
@@ -259,6 +269,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: onRight
   function onRight(): void {
     const [right, left] = [side("source", true), side("current", true)];
     if (selectedType === "source" || is.empty(right)) {
@@ -279,6 +290,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: previous
   function previous(): void {
     setImmediate(() => component.render());
     const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
@@ -295,6 +307,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     value = GV(list[index - INCREMENT]);
   }
 
+  // #MARK: reset
   function reset(): void {
     current = [...opt.current];
     source = [...opt.source];
@@ -302,6 +315,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render(true);
   }
 
+  // #MARK: searchAppend
   function searchAppend(key: string): void {
     if ((key.length > SINGLE && key !== "space") || ["`"].includes(key)) {
       return;
@@ -313,11 +327,13 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render(true);
   }
 
+  // #MARK: searchBack
   function searchBack(): void {
     searchText = searchText.slice(START, ARRAY_OFFSET * INVERT_VALUE);
     component.render(true);
   }
 
+  // #MARK: selectAll
   function selectAll(): void {
     current = [...current, ...source];
     source = [];
@@ -326,6 +342,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: selectNone
   function selectNone(): void {
     source = [...current, ...source];
     current = [];
@@ -334,6 +351,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: toggle
   function toggle(): void {
     if (selectedType === "current") {
       remove();
@@ -346,12 +364,14 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render();
   }
 
+  // #MARK: updateSortCache
   function updateSortCache() {
     prefixCache = new Map();
     buildSortCache("current");
     buildSortCache("source");
   }
 
+  // #MARK: toggleFind
   function toggleFind(): void {
     mode = mode === "find" ? "select" : "find";
     searchText = "";
@@ -359,17 +379,20 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     component.render(true);
   }
 
+  // #MARK: top
   function top(): void {
     const list = rawSortCache[selectedType].filter(i => GV(i) !== INTERNAL_ENTRY);
     value = GV(list[FIRST]);
     component.render();
   }
 
+  // #MARK: detectSide
   function detectSide(): void {
     const isLeftSide = side("current").some(i => GV(i) === value);
     selectedType = isLeftSide ? "current" : "source";
   }
 
+  // #MARK: filterMenu
   function filterMenu(side: MenuSides, updateValue = false): MainMenuEntry<VALUE | string>[] {
     const data = side === "source" ? source : current;
     lastFilter[side] = terminal.text.fuzzyMenuSort(searchText, data);
@@ -381,6 +404,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     return terminal.text.selectRange(lastFilter[side], value, true);
   }
 
+  // #MARK: remove
   function remove(): void {
     if (selectedType === "source") {
       return;
@@ -427,6 +451,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     value = GV(currentValue[index + INCREMENT]);
   }
 
+  // #MARK: renderSide
   function renderSide(currentSide: MenuSides = selectedType, updateValue = false): string[] {
     const out: string[] = [];
     let menu = side(currentSide, true);
@@ -463,6 +488,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     return out;
   }
 
+  // #MARK: buildSortCache
   function buildSortCache(currentSide: MenuSides) {
     const raw = (currentSide === "current" ? current : source) as MainMenuEntry<VALUE>[];
     // more of an "advanced sort"
@@ -496,19 +522,28 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
       return DOWN;
     });
 
+    const maxLabel =
+      ansiMaxLength(
+        ...sortedList.map(([{ entry, icon }]) => entry[LABEL] + (is.empty(icon) ? "" : `${icon} `)),
+      ) + ARRAY_OFFSET;
     rawSortCache[currentSide] = sortedList.map(([item]) => item as MainMenuEntry<VALUE | string>);
     if (!hasGroups) {
       sortCache[currentSide] = rawSortCache[currentSide];
+      sortedList.forEach(([item]) => {
+        // ? Where the cursor is
+        const padded = ansiPadEnd(
+          // ? If an icon exists, provide it and append a space
+          (is.empty(item.icon) ? "" : `${item.icon} `) + item.entry[LABEL],
+          maxLabel,
+        );
+        prefixCache.set(GV(item), { padded, prefix: "" });
+      });
       return sortCache[currentSide];
     }
 
     const out = [] as MainMenuEntry<VALUE | string>[];
 
-    const maxType = ansiMaxLength(...sortedList.map(([{ type }]) => type ?? ""));
-    const maxLabel =
-      ansiMaxLength(
-        ...sortedList.map(([{ entry, icon }]) => entry[LABEL] + (is.empty(icon) ? "" : `${icon} `)),
-      ) + ARRAY_OFFSET;
+    const maxType = ansiMaxLength(...sortedList.map(([{ type = "" }]) => type));
     let last = "";
     sortedList.forEach(([item]) => {
       // * Grouping label
@@ -545,6 +580,7 @@ export function PickMany<VALUE = unknown>({ terminal, internal, config }: TServi
     return out;
   }
 
+  // #MARK: side
   function side(
     currentSide: MenuSides = selectedType,
     range = false,

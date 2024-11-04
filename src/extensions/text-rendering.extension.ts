@@ -286,7 +286,7 @@ export function TextRendering({ terminal, config, internal, lifecycle }: TServic
         right = right.padEnd(maxB, " ");
         out.unshift(
           template(
-            `{blue.bold ${left}} ${config.terminal.MENU_COLUMN_DIVIDER}{blue.bold ${right}}`,
+            `{blue.bold ${left}} ${config.terminal.MENU_COLUMN_DIVIDER} {blue.bold ${right}}`,
           ),
         );
       }
