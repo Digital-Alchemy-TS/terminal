@@ -52,7 +52,7 @@ export interface DateEditorEditorOptions {
    */
   helpNotes?: string | ((current: Date | Date[]) => string);
   label?: string;
-  type?: tDateType;
+  dateType?: tDateType;
 }
 
 // TODO: There is probably a way to make dayjs give me this info
@@ -110,6 +110,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
   let type: tDateType;
   let value: dayjs.Dayjs | dayjs.Dayjs[];
 
+  // #MARK: notes
   function notes(): string {
     const { helpNotes } = opt;
     if (is.string(helpNotes)) {
@@ -124,10 +125,12 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     return `\n `;
   }
 
+  // #MARK: editField
   function editField() {
-    return end ? VALUES : END_VALUES;
+    return end ? END_VALUES : VALUES;
   }
 
+  // #MARK: editType
   function editType(key: string) {
     setImmediate(() => editor.render());
     error = "";
@@ -167,6 +170,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     }
   }
 
+  // #MARK: onDown
   function onDown() {
     setImmediate(() => editor.render());
     error = "";
@@ -188,6 +192,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     }
   }
 
+  // #MARK: onEnd
   function onEnd(): void | boolean {
     if (type == "range") {
       editor.render();
@@ -225,9 +230,22 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     );
     complete = true;
     editor.render();
-    done(value.toISOString());
+    switch (type) {
+      case "date": {
+        done(dayjs(value).startOf("day").toISOString());
+        return;
+      }
+      case "time": {
+        done(value.toISOString());
+        return;
+      }
+      case "datetime": {
+        done(value.toISOString());
+      }
+    }
   }
 
+  // #MARK: onKeyPress
   function onKeyPress(key: string, { shift }: KeyModifiers) {
     setImmediate(() => editor.render());
     error = "";
@@ -280,6 +298,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     cursor++;
   }
 
+  // #MARK: onLeft
   function onLeft(): void {
     const field = editField();
     error = "";
@@ -293,6 +312,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     editor.render();
   }
 
+  // #MARK: onRight
   function onRight(): void {
     const field = editField();
     error = "";
@@ -306,6 +326,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     editor.render();
   }
 
+  // #MARK: onUp
   function onUp(): void {
     const field = editField();
     error = "";
@@ -323,24 +344,28 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     editor.render();
   }
 
+  // #MARK: reset
   function reset(): void {
     localDirty = false;
     chronoText = "";
     editor.render();
   }
 
+  // #MARK: setEnd
   function setEnd(): void {
     edit = "second";
     localDirty = false;
     editor.render();
   }
 
+  // #MARK: setHome
   function setHome(): void {
     edit = type === "time" ? "hour" : "year";
     localDirty = false;
     editor.render();
   }
 
+  // #MARK: setMax
   function setMax(): void {
     setImmediate(() => editor.render());
     const field = editField();
@@ -370,6 +395,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     }
   }
 
+  // #MARK: setMin
   function setMin(): void {
     setImmediate(() => editor.render());
     const field = editField();
@@ -391,6 +417,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     }
   }
 
+  // #MARK: toggleChrono
   function toggleChrono(): void {
     error = "";
     fuzzy = !fuzzy;
@@ -398,11 +425,13 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     editor.render();
   }
 
+  // #MARK: toggleRangeSide
   function toggleRangeSide(): void {
     end = !end;
     editor.render();
   }
 
+  // #MARK: onEndRange
   function onEndRange(): boolean | void {
     if (fuzzy) {
       if (is.empty(chronoText)) {
@@ -447,6 +476,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     return false;
   }
 
+  // #MARK: renderChronoBox
   function renderChronoBox(): void {
     const placeholder = type === "range" ? DEFAULT_RANGE_PLACEHOLDER : DEFAULT_PLACEHOLDER;
     const value = is.empty(chronoText) ? placeholder : chronoText;
@@ -491,6 +521,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     );
   }
 
+  // #MARK: renderComplete
   function renderComplete(): void {
     let message = ``;
     if (is.array(value)) {
@@ -524,6 +555,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
    * TODO: refactor these render sections methods into something more sane
    * This is super ugly
    */
+  // #MARK: renderRangeSections
   // eslint-disable-next-line sonarjs/cognitive-complexity
   function renderRangeSections(): void {
     let message = template(
@@ -614,6 +646,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     );
   }
 
+  // #MARK: renderSections
   // eslint-disable-next-line sonarjs/cognitive-complexity
   function renderSections(): void {
     let message = template(
@@ -666,6 +699,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     );
   }
 
+  // #MARK: sanityCheck
   function sanityCheck(update: string): boolean {
     const value = Number(update);
     switch (edit) {
@@ -692,6 +726,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     return false;
   }
 
+  // #MARK: setKeymap
   function setKeymap() {
     const FUZZY_KEYMAP: TTYComponentKeymap = new Map([
       [{ catchAll: true, description: "key press", powerUser: true }, onKeyPress],
@@ -737,6 +772,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     terminal.keyboard.setKeymap(editor, fuzzy ? FUZZY_KEYMAP : NORMAL_KEYMAP);
   }
 
+  // #MARK: updateMonth
   function updateMonth(): void {
     // Because I'm consistent like that
     const limit = MONTH_MAX.get(Number(VALUES.month)) ?? 28;
@@ -746,6 +782,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
     }
   }
 
+  // #MARK: <configure>
   const editor = terminal.registry.registerEditor("date", {
     configure(config: DateEditorEditorOptions, onDone: (type: unknown) => void): void {
       error = "";
@@ -754,7 +791,7 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       opt = config;
       config.fuzzy ??= "user";
       config.defaultStyle ??= config.fuzzy === "never" ? "granular" : "fuzzy";
-      type = config.type ?? "datetime";
+      type = config.dateType ?? "datetime";
       // default off
       // ? Make that @InjectConfig controlled?
       fuzzy =
@@ -768,7 +805,6 @@ export function DateEditor({ terminal, config }: TServiceParams) {
       const start = is.array(value) ? (value[START] as Dayjs) : value;
       edit = type === "time" ? "hour" : "year";
       const end = is.array(value) ? ((value[VALUE] ?? value[START]) as Dayjs) : value;
-      // const { year, month, day, minute, hour, second } = VALUES;
 
       const [year, month, day, hour, minute, second] = start
         .format("YYYY-MM-DD-HH-mm-ss")

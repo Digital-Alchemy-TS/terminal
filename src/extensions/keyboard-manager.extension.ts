@@ -13,6 +13,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
     });
   });
 
+  // #MARK: keyPressHandler
   async function keyPressHandler(descriptor: KeyDescriptor): Promise<void> {
     if (is.empty(activeKeymaps)) {
       return;

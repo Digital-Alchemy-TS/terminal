@@ -299,8 +299,8 @@ export async function Prompts({ terminal, logger, config }: TServiceParams) {
     }: PromptTimeOptions = {}): Promise<Date> {
       return await prompts.date({
         current: current.toISOString(),
+        dateType: "time",
         label,
-        type: "time",
       });
     },
 

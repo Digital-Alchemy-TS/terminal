@@ -224,6 +224,9 @@ export function ObjectBuilder<
         case "date": {
           updated = await terminal.prompt.date({
             current: current as string,
+            dateType: column.dateType,
+            defaultStyle: column.defaultStyle,
+            fuzzy: column.fuzzy,
             label: column.name,
           });
           break;
