@@ -1,5 +1,6 @@
 import { Get } from "type-fest";
 
+import { TTYDateTypes, TTYFuzzyTypes } from "../extensions";
 import { MainMenuEntry } from "./keyboard";
 
 // * <Column Definitions>
@@ -28,10 +29,19 @@ export type TableBuilderElement<
   path: PATH;
   format?<T>(value: T): string;
 } & (
-  | { default?: ObjectBuilderDefault<string, VALUE>; type: "string" }
+  | {
+      default?: ObjectBuilderDefault<string, VALUE>;
+      type: "string";
+    }
   | { default?: ObjectBuilderDefault<boolean, VALUE>; type: "boolean" }
   | { default?: ObjectBuilderDefault<number, VALUE>; type: "number" }
-  | { default?: ObjectBuilderDefault<Date, VALUE>; type: "date" }
+  | {
+      default?: ObjectBuilderDefault<Date, VALUE>;
+      type: "date";
+      fuzzy?: `${TTYFuzzyTypes}`;
+      defaultStyle?: "fuzzy" | "granular";
+      dateType?: `${TTYDateTypes}`;
+    }
   | {
       default?: ObjectBuilderDefault<Get<VALUE, PATH>, VALUE>;
       options: MainMenuEntry<Get<VALUE, PATH>>[];
@@ -40,6 +50,7 @@ export type TableBuilderElement<
   | {
       default?: ObjectBuilderDefault<Get<VALUE, PATH>[], VALUE>;
       options: MainMenuEntry<Get<VALUE, PATH>>[];
+      items?: string;
       type: "pick-many";
     }
 );

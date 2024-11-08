@@ -1,5 +1,4 @@
 import { CreateLibrary, StringConfig } from "@digital-alchemy/core";
-import { LIB_CACHE } from "@digital-alchemy/utils";
 import { Fonts } from "figlet";
 
 import {
@@ -44,6 +43,11 @@ export const LIB_TERMINAL = CreateLibrary({
       default: "Any key to continue",
       description: "Text for acknowledge component to display if nothing is provided",
       type: "string",
+    },
+    DEFAULT_MESSAGE_TIMEOUT_MS: {
+      default: 3000,
+      description: "Object builder validation error timeout",
+      type: "number",
     },
     DEFAULT_PROMPT_WIDTH: {
       default: 50,
@@ -177,7 +181,6 @@ export const LIB_TERMINAL = CreateLibrary({
       type: "boolean",
     },
   },
-  depends: [LIB_CACHE],
   name: "terminal",
   priorityInit: ["internals", "registry"],
   services: {

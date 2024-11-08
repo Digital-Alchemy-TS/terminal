@@ -3,7 +3,6 @@ import {
   deepCloneArray,
   deepExtend,
   is,
-  SECOND,
   sleep,
   START,
   TServiceParams,
@@ -26,13 +25,12 @@ type HelpText = {
 };
 
 const HELP_ERASE_SIZE = 3;
-const DEFAULT_MESSAGE_TIMEOUT = 3;
 const NORMAL_EXIT = Symbol();
 
 export function ObjectBuilder<
   VALUE extends object = Record<string, unknown>,
   CANCEL extends unknown = never,
->({ terminal, internal }: TServiceParams) {
+>({ terminal, internal, config }: TServiceParams) {
   const { GV, template } = terminal.internals;
 
   const CANCELLABLE: TTYComponentKeymap = new Map([
@@ -89,6 +87,7 @@ export function ObjectBuilder<
    */
   let selectedRow = START;
 
+  // #MARK: dirtyProperties
   function dirtyProperties(): (keyof VALUE)[] {
     const original = opt.current ?? {};
     const current = value;
@@ -100,6 +99,7 @@ export function ObjectBuilder<
       .map(({ path }) => path);
   }
 
+  // #MARK: headerMessage
   function headerMessage(): string {
     const { headerMessage } = opt;
     if (is.string(headerMessage)) {
@@ -118,6 +118,7 @@ export function ObjectBuilder<
     return ``;
   }
 
+  // #MARK: helpNotes
   function helpNotes(): string {
     const { helpNotes } = opt;
     if (is.string(helpNotes)) {
@@ -129,10 +130,12 @@ export function ObjectBuilder<
     return `\n `;
   }
 
+  // #MARK: columns
   function columns() {
     return opt.elements;
   }
 
+  // #MARK: visibleColumns
   function visibleColumns() {
     return columns().filter(i => {
       if (!i.hidden) {
@@ -155,6 +158,7 @@ export function ObjectBuilder<
    *
    * Immediate end, return cancel value
    */
+  // #MARK: cancel
   function cancel(): void {
     const { cancel, current } = opt;
     if (is.function(cancel)) {
@@ -181,7 +185,7 @@ export function ObjectBuilder<
          */
         sendMessage: async ({
           message,
-          timeout = DEFAULT_MESSAGE_TIMEOUT,
+          timeout = config.terminal.DEFAULT_MESSAGE_TIMEOUT_MS,
           position = "below-bar",
           immediateClear = false,
         }) => {
@@ -191,7 +195,7 @@ export function ObjectBuilder<
           displayMessagePosition = position;
           displayMessage = message;
           component.render();
-          displayMessageTimeout = sleep(timeout * SECOND);
+          displayMessageTimeout = sleep(timeout);
           await displayMessageTimeout;
           displayMessage = undefined;
           displayMessageTimeout = undefined;
@@ -209,6 +213,7 @@ export function ObjectBuilder<
   /**
    * keyboard event
    */
+  // #MARK: enableEdit
   async function enableEdit(): Promise<void> {
     await terminal.screen.footerWrap(async () => {
       const column = visibleColumns()[selectedRow];
@@ -219,6 +224,9 @@ export function ObjectBuilder<
         case "date": {
           updated = await terminal.prompt.date({
             current: current as string,
+            dateType: column.dateType,
+            defaultStyle: column.defaultStyle,
+            fuzzy: column.fuzzy,
             label: column.name,
           });
           break;
@@ -254,6 +262,7 @@ export function ObjectBuilder<
           ) as MainMenuEntry<VALUE | string>[];
           updated = await terminal.prompt.pickMany<VALUE>({
             current: selected,
+            items: column.items,
             source,
           });
           break;
@@ -281,6 +290,7 @@ export function ObjectBuilder<
   /**
    * keyboard event
    */
+  // #MARK: onDown
   function onDown(): void {
     if (selectedRow === visibleColumns().length - ARRAY_OFFSET) {
       onPageUp();
@@ -293,6 +303,7 @@ export function ObjectBuilder<
   /**
    * keyboard event
    */
+  // #MARK: onPageDown
   function onPageDown(): void {
     selectedRow = visibleColumns().length - ARRAY_OFFSET;
     component.render();
@@ -301,6 +312,7 @@ export function ObjectBuilder<
   /**
    * keyboard event
    */
+  // #MARK: onPageUp
   function onPageUp(): void {
     selectedRow = START;
     component.render();
@@ -309,6 +321,7 @@ export function ObjectBuilder<
   /**
    * keyboard event
    */
+  // #MARK: onUp
   function onUp(): void {
     if (selectedRow === START) {
       onPageDown();
@@ -321,6 +334,7 @@ export function ObjectBuilder<
   /**
    * Undo any changes done during the current editing session
    */
+  // #MARK: resetField
   async function resetField(): Promise<void> {
     let value: boolean;
     const field = visibleColumns()[selectedRow];
@@ -353,6 +367,7 @@ export function ObjectBuilder<
   /**
    * Terminate editor
    */
+  // #MARK: end
   function end(code: unknown): void {
     complete = true;
     component.render();
@@ -376,6 +391,7 @@ export function ObjectBuilder<
     );
   }
 
+  // #MARK: setDefault
   function setDefault(column: TableBuilderElement<VALUE>): void {
     const current = internal.utils.object.get(value, column.path);
     if (!is.undefined(current)) {
@@ -408,6 +424,7 @@ export function ObjectBuilder<
   /**
    * Build up a keymap to match the current conditions
    */
+  // #MARK: setKeymap
   function setKeymap(): void {
     const maps: TTYComponentKeymap[] = [];
     maps.push(FORM_KEYMAP);
@@ -417,6 +434,7 @@ export function ObjectBuilder<
     terminal.keyboard.setKeymap(this, ...maps);
   }
 
+  // #MARK: <register>
   const component = terminal.registry.registerComponent("object", {
     configure(
       config: ObjectBuilderOptions<VALUE, CANCEL>,
@@ -448,6 +466,7 @@ export function ObjectBuilder<
     /**
      * keyboard event
      */
+    // #MARK: onEnd
     async onEnd(): Promise<void> {
       const { validate, current } = opt;
       if (is.function(validate)) {
@@ -465,7 +484,7 @@ export function ObjectBuilder<
           original: current,
           sendMessage: async ({
             message,
-            timeout = DEFAULT_MESSAGE_TIMEOUT,
+            timeout = config.terminal.DEFAULT_MESSAGE_TIMEOUT_MS,
             position = "below-bar",
             immediateClear = false,
             // TODO This shouldn't be a thing
@@ -476,7 +495,7 @@ export function ObjectBuilder<
             displayMessagePosition = position;
             displayMessage = message;
             component.render();
-            displayMessageTimeout = sleep(timeout * SECOND);
+            displayMessageTimeout = sleep(timeout);
             await displayMessageTimeout;
             displayMessage = undefined;
             displayMessageTimeout = undefined;
@@ -492,16 +511,19 @@ export function ObjectBuilder<
       end(NORMAL_EXIT);
     },
 
+    // #MARK: render
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     render(): void {
       terminal.application.reprintHeader();
       if (complete) {
         terminal.screen.render("", "");
         return;
       }
+      const visible = visibleColumns();
       const aboveBar =
         displayMessagePosition === "above-bar" && !is.empty(displayMessage)
           ? { helpText: displayMessage }
-          : (visibleColumns()[selectedRow] as HelpText);
+          : (visible[selectedRow] as HelpText);
 
       const belowBar =
         displayMessagePosition === "below-bar" && !is.empty(displayMessage)
@@ -509,14 +531,16 @@ export function ObjectBuilder<
           : helpNotes();
 
       const message = terminal.text.mergeHelp(
-        terminal.text.pad(
-          terminal.form.renderForm(
-            { ...opt, elements: visibleColumns() },
-            value,
-            opt.current,
-            selectedRow,
-          ),
-        ),
+        is.empty(visible)
+          ? chalk.red.bold("\nError: ") + chalk.yellow("no visible columns to render")
+          : terminal.text.pad(
+              terminal.form.renderForm(
+                { ...opt, elements: visible },
+                value,
+                opt.current,
+                selectedRow,
+              ),
+            ),
         aboveBar,
       );
 

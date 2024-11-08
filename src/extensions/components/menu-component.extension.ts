@@ -51,7 +51,7 @@ type MenuRestoreCacheData<VALUE = unknown> = {
 };
 const DEFAULT_HEADER_PADDING = 4;
 
-const CACHE_KEY_RESTORE = (id: string) => `MENU_COMPONENT_RESTORE_${id}`;
+// const CACHE_KEY_RESTORE = (id: string) => `MENU_COMPONENT_RESTORE_${id}`;
 
 interface LastMenuResultInfo<VALUE = unknown> {
   key?: {
@@ -133,7 +133,7 @@ function isSearchEnabled(options: MenuSearchOptions) {
 let LAST_RESULT: LastMenuResultInfo<unknown>;
 type LR = "left" | "right";
 
-export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TServiceParams) {
+export function Menu<VALUE = unknown>({ config, terminal, internal }: TServiceParams) {
   const { ansiPadEnd, template, GV } = terminal.internals;
 
   let value: VALUE;
@@ -177,6 +177,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Run callbacks from the keyMap
    */
+  // #MARK: activateKeyMap
   async function activateKeyMap(mixed: string, modifiers: KeyModifiers): Promise<void> {
     const { keyMap, keyMapCallback: callback } = opt;
     const entry = findKeyEntry(keyMap, mixed);
@@ -232,6 +233,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Move the cursor to the bottom of the list
    */
+  // #MARK: bottom
   function bottom(): void {
     const list = side(selectedType);
     value = GV(list[list.length - ARRAY_OFFSET].entry);
@@ -243,6 +245,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
    *
    * mode: "select"
    */
+  // #MARK: navigateSearch
   function navigateSearch(key: string): void {
     // * Grab list of items from current side
     const all = side(selectedType);
@@ -277,6 +280,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Move down 1 entry
    */
+  // #MARK: next
   function next(): void {
     setImmediate(() => component.render(false));
     const list = side(selectedType);
@@ -296,6 +300,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * on left key press - attempt to move to left menu
    */
+  // #MARK: onLeft
   function onLeft(): void {
     if (is.empty(opt.left) || selectedType === "left") {
       return;
@@ -308,6 +313,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * On right key press - attempt to move editor to right side
    */
+  // #MARK: onRight
   function onRight(): void {
     if (is.empty(opt.right) || selectedType === "right") {
       return;
@@ -317,6 +323,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     component.render(false);
   }
 
+  // #MARK: onSearchFindInputKeyPress
   function onSearchFindInputKeyPress(key: string) {
     let update = false;
     setImmediate(() => component.render(update));
@@ -391,6 +398,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Key handler for widget while in search mode
    */
+  // #MARK: onSearchKeyPress
   function onSearchKeyPress(key: string): void {
     let update = false;
     setImmediate(() => component.render(update));
@@ -464,6 +472,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Attempt to move up 1 item in the active list
    */
+  // #MARK: previous
   function previous(): void {
     setImmediate(() => component.render(false));
     const list = side(selectedType);
@@ -483,6 +492,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Simple toggle function
    */
+  // #MARK: toggleFind
   function toggleFind(): void {
     mode = mode === "select" ? FIND_INPUT : "select";
     if (mode === "select") {
@@ -515,6 +525,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Move cursor to the top of the current list
    */
+  // #MARK: top
   function top(): void {
     const list = side(selectedType);
     value = GV(list[FIRST].entry);
@@ -529,6 +540,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
    *
    * The goal is to maintain as much functionality as possible as the screen shrinks
    */
+  // #MARK: assembleMessage
   function assembleMessage(construction: MenuConstruction): string {
     let height = terminal.environment.getHeight();
     let caught = false;
@@ -555,6 +567,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Auto detect selectedType based on the current value
    */
+  // #MARK: detectSide
   function detectSide(): void {
     const isLeftSide = side("left").some(i => GV(i.entry) === value);
     selectedType = isLeftSide ? "left" : "right";
@@ -570,6 +583,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
    * { entry: ["combined"] }
    * ```
    */
+  // #MARK: filterMenu
   function filterMenu(
     data: MainMenuEntry<VALUE>[],
     side: LR,
@@ -642,6 +656,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     return highlighted;
   }
 
+  // #MARK: transferCursor
   function transferCursor() {
     const { left, right } = filteredRangedSides();
     const leftRange = visualRange(left);
@@ -657,6 +672,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
       .find((item, index) => index >= reversedIndex && item !== BLANK_SPACE) as VALUE;
   }
 
+  // #MARK: filteredRangedSides
   function filteredRangedSides() {
     let [right, left] = [side("right"), side("left")];
 
@@ -675,6 +691,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     };
   }
 
+  // #MARK: visualRange
   function visualRange(list: MainMenuEntry<VALUE>[]) {
     let previous: string | symbol;
     return list.flatMap(i => {
@@ -686,6 +703,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     });
   }
 
+  // #MARK: findKeyEntry
   function findKeyEntry(map: KeyMap<VALUE>, key: string) {
     if (map[key]) {
       return map[key];
@@ -703,6 +721,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * The final frame of a menu, informing what happened
    */
+  // #MARK: renderFinal
   function renderFinal() {
     const item = selectedEntry();
     let message = terminal.text.mergeHelp("", item);
@@ -721,6 +740,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Rendering for search mode
    */
+  // #MARK: renderFind
   function renderFind(updateValue = false): void {
     searchCache.old = searchCache.current;
     searchCache.current = {
@@ -765,6 +785,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
   /**
    * Rendering for standard keyboard navigation
    */
+  // #MARK: renderSelect
   function renderSelect() {
     const construction = {} as MenuConstruction;
 
@@ -827,6 +848,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     terminal.screen.render(message);
   }
 
+  // #MARK: renderSelectKeymap
   function renderSelectKeymap() {
     const prefix = Object.keys(opt.keyMap).map(key => {
       let item = opt.keyMap[key];
@@ -875,6 +897,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
    * Render a menu from a side
    */
 
+  // #MARK: renderSide
   function renderSide(
     side: "left" | "right" = selectedType,
     header = opt.showHeaders,
@@ -948,6 +971,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     return out;
   }
 
+  // #MARK: renderSideHeader
   function renderSideHeader(side: "left" | "right", max: number): string {
     const padding = " ".repeat(headerPadding);
     if (side === "left") {
@@ -956,6 +980,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     return `${padding}${rightHeader}`.padEnd(max, " ");
   }
 
+  // #MARK: renderSideSetup
   function renderSideSetup(selected: "left" | "right" = selectedType, updateValue = false) {
     const out: MainMenuEntry[] = [];
     let menu = side(selected);
@@ -1018,6 +1043,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     });
   }
 
+  // #MARK: selectedEntry
   function selectedEntry(): MainMenuEntry {
     const values = Object.values(opt.keyMap);
     return [
@@ -1027,6 +1053,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     ].find(item => GV(item.entry) === value);
   }
 
+  // #MARK: setKeymap
   function setKeymap(): void {
     // show if keyOnly, or falsy condensed
     const hidden = opt.keyOnly || opt.condensed;
@@ -1070,6 +1097,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     terminal.keyboard.setKeymap(component, keymap);
   }
 
+  // #MARK: setValue
   // eslint-disable-next-line sonarjs/cognitive-complexity
   async function setValue(incoming: VALUE, restore: MenuRestore): Promise<void> {
     value = undefined;
@@ -1089,7 +1117,8 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
 
     // If a restore id is available, attempt to get data from that
     if (!is.empty(restore?.id)) {
-      const data = await cache.get<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(restore.id));
+      const data = undefined as MenuRestoreCacheData<VALUE>;
+      // const data = await cache.get<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(restore.id));
 
       if (data) {
         // Position based value restoration
@@ -1137,6 +1166,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
    *  - Items sorted within types, priority first, then ansi stripped label
    */
 
+  // #MARK: side
   function side(side: "left" | "right"): MainMenuEntry<VALUE>[] {
     let temp = opt[side].map(item => [
       item,
@@ -1170,6 +1200,7 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
     return temp.map(([item]) => item as MainMenuEntry<VALUE>);
   }
 
+  // #MARK: <configure>
   const component = terminal.registry.registerComponent("menu", {
     async configure(
       config: MenuComponentOptions<VALUE>,
@@ -1203,6 +1234,12 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
       opt.left.forEach(i => (i.type ??= ""));
       opt.right.forEach(i => (i.type ??= ""));
       opt.keyMap ??= {};
+
+      // rename
+      if (opt.keyMap.esc) {
+        opt.keyMap.escape = opt.keyMap.esc;
+        delete opt.keyMap.esc;
+      }
 
       done = isDone;
 
@@ -1249,14 +1286,14 @@ export function Menu<VALUE = unknown>({ config, terminal, internal, cache }: TSe
       };
       component.render();
       done = undefined;
-      if (opt.restore) {
-        setImmediate(async () => {
-          await cache.set<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(opt.restore?.id), {
-            position: [selectedType, index],
-            value: GV(list[index]) ?? value,
-          });
-        });
-      }
+      // if (opt.restore) {
+      //   setImmediate(async () => {
+      //     await cache.set<MenuRestoreCacheData<VALUE>>(CACHE_KEY_RESTORE(opt.restore?.id), {
+      //       position: [selectedType, index],
+      //       value: GV(list[index]) ?? value,
+      //     });
+      //   });
+      // }
     },
 
     /**

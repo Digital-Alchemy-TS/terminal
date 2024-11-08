@@ -37,28 +37,33 @@ export function StringEditor({ terminal, config }: TServiceParams) {
   let initial: boolean;
   let value: string;
 
+  // #MARK: cancel
   function cancel(): void {
     value = opt.current;
     onEnd();
   }
 
+  // #MARK: clear
   function clear(): void {
     value = "";
     cursor = START;
     editor.render();
   }
 
+  // #MARK: external
   function external() {
     value = terminal.prompt.external({ text: value });
     return onEnd();
   }
 
+  // #MARK: onEnd
   function onEnd() {
     complete = true;
     editor.render();
     done(value);
   }
 
+  // #MARK: onKeyPress
   function onKeyPress(key: string, { shift }: KeyModifiers) {
     setImmediate(() => editor.render());
     switch (key) {
@@ -108,12 +113,14 @@ export function StringEditor({ terminal, config }: TServiceParams) {
     cursor++;
   }
 
+  // #MARK: reset
   function reset(): void {
     value = opt.current ?? "";
     cursor = value.length;
     editor.render();
   }
 
+  // #MARK: renderBox
   function renderBox(bgColor: string, cursorValue = cursor): void {
     const placeholder = opt.placeholder ?? DEFAULT_PLACEHOLDER;
     let current = is.empty(value) ? placeholder : value;
@@ -146,6 +153,7 @@ export function StringEditor({ terminal, config }: TServiceParams) {
     );
   }
 
+  // #MARK: <register>
   const editor = terminal.registry.registerEditor("string", {
     configure(options: StringEditorRenderOptions, onDone: (type: unknown) => void) {
       options.width ??= config.terminal.DEFAULT_PROMPT_WIDTH;

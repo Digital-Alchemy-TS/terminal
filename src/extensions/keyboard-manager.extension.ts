@@ -13,6 +13,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
     });
   });
 
+  // #MARK: keyPressHandler
   async function keyPressHandler(descriptor: KeyDescriptor): Promise<void> {
     if (is.empty(activeKeymaps)) {
       return;
@@ -22,6 +23,7 @@ export function KeyboardManager({ terminal, lifecycle }: TServiceParams) {
     let mixed = name ?? sequence ?? "enter";
     // Standardize the "done" key
     mixed = mixed === "return" ? "enter" : mixed;
+
     const catchAll: [unknown, DirectCB][] = [];
     const direct: [unknown, DirectCB][] = [];
     const modifiers: KeyModifiers = { ctrl, meta, shift };
